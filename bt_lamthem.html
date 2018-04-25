@@ -6,27 +6,29 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+    <link rel="stylesheet" href="style_dat.css">
 </head>
 
 <body>
-<form  id= "form" >
-    <div>
-        <input type="text" id = "form__input" name="title" placeholder="Nhap tieu de" required="true">
+<div class = "view-range">
+    <div class = "wrapper">
+
+        <form  id= "form" >
+            <div>
+                <input type="text" id = "form__input" name="title" placeholder="please input title" required="true">
+            </div>
+            <div>
+                <textarea name="content" id ='form__text' placeholder="please input content" required="true"></textarea>
+            </div>
+            <button type="button" id = "form__button" > Post and Display</button>
+            <button class="btn btn--add" type="reset">Reset</button>
+
+        </form>
+        <div id = "display"></div>
     </div>
-    <div>
-        <textarea name="content" id ='form__text' placeholder="Nhap noi dung" required="true"></textarea>
-    </div>
-    <button type="button" id = "form__button" > Post </button>
-    <button class="btn btn--add" type="reset">Reset</button>
+</div>
 
-</form>
-
-
-<h1> Title </h1>
-<p id = 'demo1'> </p>
-
-<h2> Content </h2>
-<p id = 'demo2'> </p>
 <script>
 
     // method="POST" action="C:\Users\phan\Desktop\ptdat\ChucMung.html"
@@ -96,7 +98,7 @@
             let list = 'list';
             if(typeof (Storage) !=='undefined'){
 
-                if(!localStorage.list){
+                if(!localStorage[list]){
                     localStorage.setItem(list,arraySaveString);
                     localStorage.list = arraySaveString;
                 }
@@ -117,7 +119,7 @@
             arraySave = localStorage.getItem('list');
             arraySave = JSON.parse(arraySave);
             arraySave.forEach(function (item) {
-                form.insertAdjacentHTML('afterend', `
+                document.getElementById('display').insertAdjacentHTML('afterbegin', `
 <h1> Title </h1>
     <p>${item.title.value} </p>
 <h2> Content </h2>

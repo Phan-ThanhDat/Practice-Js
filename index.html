@@ -251,6 +251,9 @@
         function init() {
             validateFormWorker.init();
             dataTableWorker.init();
+            validateFormWorker.onSubmitSuccess = function () {
+                dataTableWorker.render();
+            }
         }
 
 
@@ -284,7 +287,7 @@
 
 
     validateFormWorker = (function () {
-
+        let arraySave = [];
 
         var form = document.getElementById('form-worker');
         var btnSubmit = form.querySelector('button[type="submit"]');
@@ -313,7 +316,7 @@
         function inputChange(e) {
             inputStates[e.target.name].value = e.target.value;
             validateInput(e.target.name);
-            console.log(inputStates)
+            //console.log(inputStates)
         }
 
 
@@ -334,7 +337,7 @@
                     if (!inputStates.email.valid) {
                         inputStates.email.errMessage = 'Not empty';
                     }
-                    if (!validateEmail(inputStates.email.value)) {
+                    else if (!validateEmail(inputStates.email.value)) {
                         inputStates.email.errMessage = 'Email wrong';
                         inputStates.email.valid = false;
                     }
@@ -356,17 +359,44 @@
             renderInput(input);
 
         }
+        
+        function resetForm() {
+            
+        }
+
+        function save2Localstorage(e) {
+
+            if(typeof (Storage) !=='undefined'){
+
+                let list = 'workers';
+
+                if(!localStorage.getItem()){
+
+                }
+                else {
+
+                }
+
+            }
+            e.preventDefault();
+            resetForm();
+
+        }
 
         function renderInput(input) {
             var inputSelector = form.querySelector(`input[name="${input}"]`);
 
             if (!inputStates[input].valid) {
                 inputSelector.classList.add('input--error');
-
-                inputSelector.insertAdjacentHTML('afterend', `
+                let errorBox = inputSelector.parentElement.querySelector('.input__error');
+                if(!errorBox) {
+                    inputSelector.insertAdjacentHTML('afterend', `
                     <div class="input__error">${inputStates[input].errMessage}</div>
-
                `)
+                } else {
+                    errorBox.innerHTML = inputStates.email.errMessage;
+                }
+
             } else if (inputSelector.classList.contains('input--error')) {
                 inputSelector.classList.remove('input--error');
                 inputSelector.parentElement.querySelector('.input__error').remove();
@@ -397,6 +427,7 @@
         }
 
 
+
         function validateEmail(mail) {
             if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
                 return (true)
@@ -410,6 +441,9 @@
             inputs.forEach(function (inputt) {
                 inputt.addEventListener('input', inputChange)
             })
+            form.addEventListener('submit',save2Localstorage);
+
+
         }
 
         function unLoad() {

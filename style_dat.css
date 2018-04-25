@@ -1,0 +1,29 @@
+* {
+    box-sizing: border-box;
+}
+
+.view-range {
+    width: 400px;
+    background-color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+}
+.wrapper{
+    border: #f5e4e4 1px solid;
+    text-align: center;
+    padding-top: 32px;
+    padding-bottom: 32px;
+    background-color: #fbf1f1;
+}
+#form__input{
+    width: 300px;
+    margin-bottom: 16px;
+}
+#form__text{
+    width: 300px;
+    margin-bottom: 16px;
+}
+@media only screen and (min-width: 600px) {
+    /* For tablets: */
+
+}
