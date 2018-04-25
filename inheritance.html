@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h2 class="name">hahah</h2>
+<h3></h3>
+<script>
+
+    function Person(lastName, firstName) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+        Object.defineProperties(this, {
+            "fullName": {
+                "get": function () {
+                    return this.lastName + " " + this.firstName;
+                },
+            }
+        });
+
+        setFullName:(()=> {
+            this.lastName ='Ho';
+            this.firstName='Nana';
+            return this.fullName = this.lastName + ' ' + this.firstName;
+        })();
+
+
+
+    }
+
+    var a = Person.setFullNames;
+    Person.prototype = {
+        getFullName: function () {
+            return this.lastName + " " + this.firstName;
+        }
+    };
+
+
+    function Student(op) {
+        Student.call(Person, op.lastName, op.firstName);
+        //Person.call(this, op.lastName, op.firstName)
+        this.classRoom = op.classRoom;
+    }
+
+
+   // Student.prototype = Object.create(Person.prototype);
+
+    Student.__pro__ = Person;
+    Student.prototype.printClassRoom = function () {
+      console.log(this.classRoom)  ;
+    };
+
+    var s1 = new Student(
+        {
+
+            firstName: 'Giang',
+            lastName: 'Name',
+            classRoom: '12A3',
+        }
+    )
+
+
+    p1 =  new Person('duc ','phan')
+
+    s1.getFullName;
+</script>
+</body>
+</html>
+

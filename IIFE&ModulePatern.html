@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h2 class="name">hahah</h2>
+<h3></h3>
+<script>
+
+    // module pattern
+    var imageProcessing = (function () {
+
+        function privateA() {
+            privateB();
+            console.log('a');
+        }
+
+
+        function privateB() {
+            console.log('b');
+        }
+
+        function privateC() {
+            privateB();
+            console.log('c');
+        }
+
+        return {
+            compress: privateA,
+            invert: privateC
+        }
+
+    }());
+
+    imageProcessing.compress();
+    imageProcessing.invert();
+
+    var a;
+
+    (function (w) {
+        var a = function () {
+          console.log('a');
+        };
+
+       w.$ = function () {
+           console.log('this is jquery');
+           a();
+       };
+    }(window));
+
+
+    console.log(a);
+    /// IIFE Immediately Invoked Function Expressions
+
+</script>
+</body>
+</html>
+

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script>
+
+
+
+        window.addEventListener('load', function () {
+
+
+
+            ///
+            let htmlSelector = (val =>
+                    document.querySelectorAll(val)
+            );
+
+            let pTags = htmlSelector('p');
+            let pHow = pTags[0];
+
+
+            let listId = document.getElementById('list');
+            let liTags = listId.querySelectorAll('li');
+            let liTagsNew = htmlSelector('li');
+
+            for (let i = 0; i < liTagsNew.length; i ++) {
+                if(liTagsNew[i].getAttribute('data-animal-code') === 'Cat' || liTagsNew[i].innerHTML === 'Cat') {
+                    liTagsNew[i].parentNode.removeChild(liTagsNew[i]);
+                }
+
+                if(liTagsNew[i].getAttribute('data-animal-code') === 'dog' || liTagsNew[i].innerHTML === 'Dog') {
+                    liTagsNew[i].style.color = '#ff0000';
+                }
+            }
+
+            /*for (let i = 0; i < liTags.length; i ++) {
+                if(liTags[i].getAttribute('data-id') === null) {
+                    liTags[i].parentNode.removeChild(liTags[i]);
+                }
+            }
+
+
+            for (let i = 0; i < liTagsNew.length; i ++) {
+                if(liTagsNew[i].hasAttribute('data-id') === false) {
+                    liTagsNew[i].parentNode.removeChild(liTagsNew[i]);
+                }
+            }*/
+
+            let formTag = document.querySelectorAll('form');
+            let inputTags = formTag[0].querySelectorAll('input');
+
+            inputTags[0].setAttribute('data-value','giang.nguyen@gmail.com')
+            inputTags[1].removeAttribute('name');
+            inputTags[1].setAttribute('data-password','password')
+
+
+            document.getElementById("list").addEventListener("click", function (e) {
+                console.log(e.target);
+                console.log(e.currentTarget);
+                console.log(e.target.dataset.animalCode);
+            })
+
+
+            document.getElementById("email").addEventListener("keypress", function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation()
+                console.log(e.target.value)
+            })
+
+            document.getElementById('form').addEventListener('submit',function (e) {
+                e.preventDefault()
+
+                // doc value
+
+                // fetch
+            })
+
+        });
+
+
+        function hello(e) {
+            console.log("go")
+            console.log(e)
+        }
+
+
+    </script>
+</head>
+<body>
+
+
+// A
+// B
+    <h1>Hello</h1>
+    <p>How</p>
+    <p>are</p>
+    <p>You</p>
+
+
+
+
+    <ul>
+        <li class="list-item">Dog</li>
+        <li class="list-item">Cat</li>
+        <li class="list-item">Rat</li>
+    </ul>
+
+
+    <form id="form" >
+        <input type="text" name="email" id="email">
+        <input type="text" name="name">
+        <button > AAA </button>
+    </form>
+
+    div.d
+    div.a
+    div.c
+    <div id="list">
+        <ul>
+            <li class="list-item" data-animal-code="dog" data-id="1">salsla</li>
+            <li class="list-item">Cat</li>
+            <li class="list-item">Rat</li>
+        </ul>
+    </div>
+
+
+</body>
+</html>

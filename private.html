@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h2 class="name">hahah</h2>
+<h3></h3>
+<script>
+
+    var Student = (function () {
+
+        var privateVar = 5;
+
+        var StudentReal = function Student(name) {
+            this.name = name;
+        };
+
+        StudentReal.prototype = {
+          getName: function () {
+              console.log(this.name)
+          },
+
+          getPrivate: function () {
+              console.log('print ' + privateVar);
+          },
+
+          setPrivate: function (v) {
+              privateVar = v;
+          },
+        };
+
+        return StudentReal;
+    }());
+
+    var s1 =  new Student("Giang");
+
+    var s2 =  new Student("Duc");
+
+    s1.getName();
+    s2.setPrivate(19);
+
+    s1.getPrivate();
+    s2.getPrivate();
+
+    s1.setPrivate(10);
+
+    s1.getPrivate();
+    s2.getPrivate();
+
+    var Person = (function() {
+        var nameSymbol = Symbol('name');
+
+        function Person(name) {
+            this[nameSymbol] = name;
+        }
+
+        Person.prototype.getName = function() {
+            return this[nameSymbol];
+        };
+
+        return Person;
+    }());
+
+    var p1 = new Person('Giang');
+    var p2 = new Person('Duc');
+
+
+    console.log(p1);
+    console.log(p2);
+
+</script>
+</body>
+</html>
+

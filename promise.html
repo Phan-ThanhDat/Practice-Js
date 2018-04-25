@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h2 class="name">hahah</h2>
+<h3></h3>
+<script>
+
+    var promiseOne = new Promise((resolve, reject) => {
+       try {
+
+           reject('aaa');
+           reject('bbbb');
+           reject('cccc');
+           return reject('ddd')
+       } catch (e) {
+           console.log(e);
+           reject (e);
+       }
+    });
+    var promiseOne1 = new Promise((resolve, reject) => {
+        try {
+
+            // cjecl
+
+
+
+            // check
+
+            // h
+
+            reject('bbbb');
+            reject('cccc');
+            return reject('ddd')
+        } catch (e) {
+            console.log(e);
+            reject (e);
+        }
+    });
+
+    console.log("Final 11line")
+    console.log("Final 2222line")
+    promiseOne.then((data) => {
+        console.log(data);
+    }).catch((e) => {
+       console.error(e);
+        console.log("Final 3line pro 1")
+    });
+
+    promiseOne1.then(() => {
+        console.log(data);
+    }).catch((e) => {
+        console.error(e);
+        console.log("Final 3line pr 2")
+    });
+
+    console.log("Final 3line")
+    console.log("Final 4line")
+    console.log("Final 5line")
+
+
+</script>
+</body>
+</html>
+

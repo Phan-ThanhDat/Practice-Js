@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h2 class="name">hahah</h2>
+<h3></h3>
+<script>
+
+    function Person(lastName, firstName) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+
+
+        Object.defineProperties(this, {
+
+            "fullName": {
+                "get": function () {
+                    return this.lastName + " " + this.firstName;
+                },
+                "set": function (val) {
+                    this.lastName  =  val.split (" ")[0];
+                    let temp = val.split (" ");
+                   temp.splice(0, 1);
+                    "use strict";temp = temp.toString('');
+                    temp = temp.join(' ');
+                    this.firstName = temp;
+
+                    return val;
+                }
+            }
+        });
+    }
+
+    Person.prototype = {
+        getFullName: function () {
+            return this.lastName + " " + this.firstName;
+        }
+    };
+
+
+    var p1 = new Person('Nguyen', 'Giang');
+
+    var fName = {
+        fName: 'HDuc',
+        lName: 'PHAN'
+    }
+
+    console.log(fName);
+
+    console.log(p1.getFullName());
+    p1.fullName = 'abc def kia';
+    console.log(p1.fullName)
+
+
+    ////////////////////////////////////////////////
+    ///////////////////////////////////////////
+    var obj = {
+        fooVal: 'this is the value of foo',
+        get foo() {
+            return this.fooVal;
+        },
+        set fooo(val) {
+            this.fooVal = val;
+        }
+    }
+
+    obj.fooVal = 'hello';
+obj.fooo ='haloo';
+    console.log(obj.foo);
+
+</script>
+</body>
+</html>
+

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h2 class="name">hahah</h2>
+<h3></h3>
+<script>
+    function abc(cb) {
+        cb();
+    }
+    var cl = 'window.cl';
+    function Student (name, cl) {
+        this.name = name;
+        this.cl = cl;
+        this.v = 1;
+        console.log(this);
+
+        this.printName = function () {
+            console.log(this.v);
+            // call apply
+            // bind == return function inject with this
+
+
+
+            Student.printClass.bind(this, [49])(60)
+        }
+    }
+
+    Student.printClass = function (total, size) {
+        console.log(size);
+      console.log('Class ' + this.cl + ' Total: ' + total);
+    };
+
+    //Student.printClass();
+
+    //
+    const hs1 = new Student('Giang', '12A3',45);
+    hs1.printName();
+
+
+    var hsrand = {
+        name: 'gg',
+        class: 'aaa',
+        print: function () {
+            console.log(this.name);
+            console.log(this.class);
+        }
+    };
+
+    hsrand.print();
+
+
+    //console.log(hs1);
+
+    // console.log(Student('name', 'cl'));
+    // console.log(abc());
+
+</script>
+</body>
+</html>
+

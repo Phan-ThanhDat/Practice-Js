@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h2 class="name">hahah</h2>
+<h3></h3>
+<script>
+
+
+
+    var pro = {
+        x: 1,
+        z: 2,
+    };
+
+
+    const propX = {
+        inX: function () {
+            console.log(this.x);
+        },
+        inZ: function () {
+            console.log(this.z);
+        }
+    };
+
+    //(([[Prototype]] .__proto__
+
+    Object.setPrototypeOf(pro, propX);
+
+
+
+    var pro2 = Object.create(
+        propX,
+        {
+            x: {
+                writable: true,
+                value: 10
+            }
+        },
+        {
+            y: {
+                writable: true,
+                value: 100
+            }
+        }
+    );
+
+
+
+
+    //ob.prototype = pro;
+</script>
+</body>
+</html>
+

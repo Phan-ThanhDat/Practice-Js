@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h2 class="name">hahah</h2>
+<h3></h3>
+<script>
+    var cl = 'window.cl';
+    function Student (name, cl) {
+        this.name = name;
+        this.cl = cl;
+        this.v = 1;
+
+        var privateProp = 10;
+
+        function name() {
+            this.name = 10;
+        }
+
+        const abc = () => {
+            this.name = 10;
+        }
+    }
+
+    Student.prototype = {
+        printName: function () {
+            console.log(privateProp)
+            console.log('Name is ' + this.name);
+            Student.printClass.bind(this)();
+        }
+    };
+
+
+    Student.printClass = function () {
+      console.log(this.printClass);
+      console.log(this.printName);
+      console.log(this.cl);
+    };
+
+    Student.printClass();
+
+    //
+
+    const hs1 = new Student('Giang', '12A3');
+    hs1.printName();
+
+    const hs2 = Object.create(Student.prototype, {
+       name: {
+           value: 'Duc'
+       },
+        v: {
+            value: 2
+        }
+    });
+
+    hs2.name = 'Duc fake';
+
+    hs2.printName()
+
+const  hs3 =
+Object.setPrototypeOf(hs2,Student.prototype);
+
+    //console.log(hs1);
+
+    // console.log(Student('name', 'cl'));
+    // console.log(abc());
+
+</script>
+</body>
+</html>
+

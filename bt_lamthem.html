@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+<form  id= "form" >
+    <div>
+        <input type="text" id = "form__input" name="title" placeholder="Nhap tieu de" required="true">
+    </div>
+    <div>
+        <textarea name="content" id ='form__text' placeholder="Nhap noi dung" required="true"></textarea>
+    </div>
+    <button type="button" id = "form__button" > Post </button>
+    <button class="btn btn--add" type="reset">Reset</button>
+
+</form>
+
+
+<h1> Title </h1>
+<p id = 'demo1'> </p>
+
+<h2> Content </h2>
+<p id = 'demo2'> </p>
+<script>
+
+    // method="POST" action="C:\Users\phan\Desktop\ptdat\ChucMung.html"
+
+    workersModule = ( () => {
+
+        function init() {
+            validateFormWorker.init();
+        }
+
+        function unLoad() {
+            validateFormWorker.unLoad();
+        }
+
+        return {
+            init: init,
+            unLoad: unLoad,
+        }
+
+    })();
+
+    validateFormWorker = (function() {
+        let arraySave = [];
+
+
+        let form = document.getElementById('form');
+        let btnSubmit = document.querySelector('button');
+        let input = form.querySelector('input');
+        let textArea = document.getElementById('form__text');
+
+        let inputStates = {
+            title: {
+                value:'',
+                valid: false,
+            },
+            content: {
+                value:'',
+                valid: false,
+            }
+        };
+
+        function inputChange(e) {
+            inputStates[e.target.name].value = e.target.value;
+            inputStates[e.target.name].valid = Boolean(e.target.value);
+            //validateInput(e.target.name);
+            checkFormCanBeSubmit();
+            // form.insertAdjacentHTML('afterend', `
+            //         <div class="display">${inputStates[e.target.name].value}</div>
+            //    `);
+
+            //console.log(inputStates)
+
+        }
+
+        function push2Array(){
+            checkFormCanBeSubmit();
+            let temp = inputStates;
+            arraySave.push(inputStates);
+            arraySave.forEach( function(item){
+
+                // console.log('hahaha')
+            })
+        }
+
+        function save2Localstorage() {
+            let arraySaveString = JSON.stringify(arraySave);
+            let list = 'list';
+            if(typeof (Storage) !=='undefined'){
+
+                if(!localStorage.list){
+                    localStorage.setItem(list,arraySaveString);
+                    localStorage.list = arraySaveString;
+                }
+                else {
+                    arraySaveString =  localStorage.getItem(list);
+                    arraySaveString = JSON.parse(arraySaveString);
+                    arraySaveString.push(inputStates);
+                    arraySaveString = JSON.stringify(arraySaveString);
+                    localStorage.list = arraySaveString;
+                }
+
+            }
+        }
+        function displayVar() {
+
+            push2Array();
+            save2Localstorage();
+            arraySave = localStorage.getItem('list');
+            arraySave = JSON.parse(arraySave);
+            arraySave.forEach(function (item) {
+                form.insertAdjacentHTML('afterend', `
+<h1> Title </h1>
+    <p>${item.title.value} </p>
+<h2> Content </h2>
+    <p> ${item.content.value} </p>
+...__________________...`);
+            })
+
+//             for( let i = 0; i < arraySave.length; i+= 1){
+//                 form.insertAdjacentHTML('afterend', `
+// <h1> Title </h1>
+//     <p>${arraySave[i].title.value} </p>
+// <h2> Content </h2>
+//     <p> ${arraySave[i].content.value} </p>
+// ...__________________...`);
+//             }
+        }
+
+        function checkFormCanBeSubmit() {
+
+            var isReady = true;
+
+            if (!inputStates.title.valid || !inputStates.content.valid){
+                isReady = false;
+            }
+
+            if(!isReady) {
+                btnSubmit.disabled = true;
+                btnSubmit.style.color = 'white'
+            } else if(isReady) {
+                btnSubmit.disabled = false;
+                btnSubmit.style.color = 'red'
+            }
+        }
+
+        function init() {
+            btnSubmit.disabled = true;
+            input.addEventListener('input', inputChange)
+            textArea.addEventListener('change', inputChange)
+            btnSubmit.addEventListener('click',displayVar)
+        }
+
+        function unLoad() {
+            input.removeEventListener('input',inputChange);
+
+        }
+
+        return {
+            init: init,
+            unLoad: unLoad,
+            inputStates: inputStates,
+        }
+    })();
+
+    workersModule.init();
+
+</script>
+
+</body>
+
+</html>
