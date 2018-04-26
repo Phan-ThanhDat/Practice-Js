@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+    <link rel="stylesheet" href="style_dat.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+</head>
+
+<body>
+<header class="header">
+    <div class="view-range header__wrapper">
+        <div class="header__icon">
+            <i class="fab fa-android"></i>
+        </div>
+        <div class="header__name">PHAN THANH DAT</div>
+    </div>
+</header>
+<div class = "view-range">
+    <div class = "wrapper">
+        <form  id= "form" >
+            <div>
+                <input type="text" id = "form__input" name="title" placeholder="please input title" required="true">
+            </div>
+            <div>
+                <textarea name="content" id ='form__text' placeholder="please input content" required="true"></textarea>
+            </div>
+            <button type="submit" id = "form__button" > Post and Display</button>
+            <button class="btn btn--add" type="reset">Reset</button>
+        </form>
+        <div id = "display"></div>
+        <footer>
+            @copyright : Phan Thanh Dat
+        </footer>
+    </div>
+</div>
+
+<script>
+
+    // method="POST" action="C:\Users\phan\Desktop\ptdat\ChucMung.html"
+
+    validateFormWorker = (function() {
+        let arraySave = [];
+
+
+        let form = document.getElementById('form');
+        let btnSubmit = form.querySelector('button[type="submit"]');
+        let input = form.querySelector('input[name="title"]');
+        let textArea = document.getElementById('form__text');
+
+        let inputStates = {
+            title: {
+                value:'',
+                valid: false,
+            },
+            content: {
+                value:'',
+                valid: false,
+            }
+        };
+
+        function inputChange(e) {
+            inputStates[e.target.name].value = e.target.value;
+            inputStates[e.target.name].valid = Boolean(e.target.value);
+            checkFormCanBeSubmit();
+        }
+
+
+
+        function save2Localstorage() {
+            let arraySaveString = [];
+            let list = 'list';
+            if(typeof (Storage) !=='undefined'){
+
+                if(!localStorage.getItem(list)){
+                    arraySave.push(inputStates);
+                    arraySaveString = JSON.stringify(arraySave);
+                    localStorage.setItem(list,arraySaveString);
+                    localStorage[list] = arraySaveString;
+                }
+                else {
+                    arraySaveString =  localStorage.getItem(list);
+                    arraySaveString = JSON.parse(arraySaveString);
+                    arraySaveString.push(inputStates);
+                    arraySaveString = JSON.stringify(arraySaveString);
+                    localStorage[list] = arraySaveString;
+                }
+
+            }
+        }
+        function displayVar(e) {
+            save2Localstorage();
+            arraySave = localStorage.getItem('list');
+            arraySave = JSON.parse(arraySave);
+            console.log(arraySave);
+//             arraySave.forEach(function (item) {
+//                 document.getElementById('display').insertAdjacentHTML('afterbegin', `
+// <h2> Title </h2>
+//     <p>${item.title.value} </p>
+// <h3> Content </h3>
+//     <p> ${item.content.value} </p>
+// __________________`);
+//             });
+
+            display = document.getElementById('display');
+
+            let listRemove = display;
+
+            while(listRemove.hasChildNodes()) {
+                listRemove.removeChild(listRemove.firstChild);
+            }
+
+            for(let i = 0; i < arraySave.length; i+= 1){
+                display.insertAdjacentHTML('afterbegin', `
+<div class="display__posts">
+<h2> Post number ${i+1} </h2>
+<h3> Title ${i+1} </h3>
+    <p>${arraySave[i].title.value} </p>
+<h4> Content ${i+1} </h4>
+    <p> ${arraySave[i].content.value} </p>
+__________________
+</div>
+`);
+            }
+
+            e.preventDefault();
+            input.value ='';
+            inputStates.title.value = input.value;
+            textArea.value = '';
+            inputStates.content.value = textArea.value;
+            btnSubmit.disabled = true;
+            btnSubmit.style.color = 'white'
+        }
+
+        function checkFormCanBeSubmit() {
+
+            var isReady = true;
+            inputStates.title.valid = Boolean(inputStates.title.value);
+            inputStates.content.valid = Boolean(inputStates.content.value);
+
+            if (!inputStates.title.valid || !inputStates.content.valid){
+                isReady = false;
+            }
+
+            if(!isReady) {
+                btnSubmit.disabled = true;
+                btnSubmit.style.color = 'white'
+            } else if(isReady) {
+                btnSubmit.disabled = false;
+                btnSubmit.style.color = 'red'
+            }
+        }
+
+        function init() {
+            btnSubmit.disabled = true;
+            input.addEventListener('input', inputChange)
+            textArea.addEventListener('input', inputChange)
+            form.addEventListener('submit',displayVar)
+        }
+
+        function unLoad() {
+            input.removeEventListener('input',inputChange);
+            textArea.removeEventListener('input', inputChange)
+            form.removeEventListener('submit',displayVar)
+        }
+
+        return {
+            init: init,
+            unLoad: unLoad,
+            inputStates: inputStates,
+        }
+    })();
+
+    validateFormWorker.unLoad();
+    validateFormWorker.init();
+
+
+</script>
+
+</body>
+
+</html>
