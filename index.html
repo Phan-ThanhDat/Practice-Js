@@ -287,7 +287,7 @@
             renderInput(input);
 
         }
-        
+
         function resetForm() {
             fname1 = form.getElementsByClassName('input')[0];
             fname2 = fname1.querySelector(`input[name="fname"]`).value ='';
@@ -380,7 +380,6 @@ ${item.tel.value}
 
 </tr>
 
-<p>hahahahah</p>
 
 `);
                 console.log(item);
@@ -410,7 +409,7 @@ ${item.tel.value}
                 inputSelector.parentElement.querySelector('.input__error').remove();
             }
 
-            checkFormCanBeSubmit();
+            checkFormCanBeSubmit1();
 
         }
 
@@ -426,15 +425,34 @@ ${item.tel.value}
                 }
             }
 
-            if(!isReady && !btnSubmit.disabled) {
+            if(!isReady) {
                 btnSubmit.disabled = true;
             } else {
                 btnSubmit.disabled = false;
+                btnSubmit.style.color = 'black';
             }
 
         }
 
+        function checkFormCanBeSubmit1() {
 
+            var isReady = true;
+            inputStates.fname.valid = Boolean(inputStates.fname.value);
+            inputStates.email.valid = Boolean(inputStates.email.value);
+            inputStates.tel.valid = Boolean(inputStates.tel.value);
+
+            if (!inputStates.tel.valid || !inputStates.email.valid || !inputStates.fname.valid){
+                isReady = false;
+            }
+
+            if(!isReady) {
+                btnSubmit.disabled = true;
+                btnSubmit.style.color = 'white'
+            } else if(isReady) {
+                btnSubmit.disabled = false;
+                btnSubmit.style.color = 'red'
+            }
+        }
 
         function validateEmail(mail) {
             if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
