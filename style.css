@@ -13,7 +13,7 @@
     height: 40px;
     color: #757575;
     border: 1px solid #ededed;
-    margin-left: auto;
+    margin-left: 16px;
 }
 
 .btn--save {
@@ -131,29 +131,33 @@
     display: flex;
     align-items: center;
 }
-
-.input {
+.inputs{
     display: flex;
-    margin-left: -16px;
-    margin-right: -16px;
-    width: 75%;
+}
+.input {
+    margin-left: 16px;
+    margin-right: 16px;
+    width: 33.3%;
     padding-bottom: 32px;
 }
-
+.input__error{
+    padding-top: 8px;
+    color: #ff0000;
+    font-size: 12px;
+}
 .input__adding {
-    margin-left: 16px;
     padding-left: 16px;
     padding-right: 16px;
     border: 1px solid #eae3e3;
     height: 40px;
-    width: 27%;
+    width: 100%;
     background-color: #fafafa;
     color: #909090;
     font-size: 16px;
 }
 
 .input__adding--mail {
-    width: 40%;
+    width: 100%;
 }
 
 .input__editing {
