@@ -220,9 +220,11 @@
         var form = document.getElementById('form-worker');
         var btnSubmit = form.querySelector('button[type="submit"]');
         var inputs = form.querySelectorAll('input');
-
+        let table = document.querySelector('.table');
+        let display = table.querySelector('tbody');
 
         var inputStates = {
+            uid : '',
             fname: {
                 value: '',
                 valid: false,
@@ -247,8 +249,22 @@
             //console.log(inputStates)
         }
 
+        let createUUID = () => {
+            // http://www.ietf.org/rfc/rfc4122.txt
+            var s = [];
+            var hexDigits = "0123456789abcdef";
+            for (var i = 0; i < 36; i++) {
+                s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+            }
+            s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+            s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+            s[8] = s[13] = s[18] = s[23] = "-";
 
-        function validateInput(input) {
+            var uuid = s.join("");
+            return uuid;
+        }
+
+            function validateInput(input) {
             switch (input) {
                 case 'fname':
                     inputStates.fname.valid = Boolean(inputStates.fname.value);
@@ -272,14 +288,18 @@
                     else {
                         inputStates.email.errMessage = '';
                     }
-
                     break;
                 case 'tel':
                     inputStates.tel.valid = Boolean(inputStates.tel.value);
                     if (!inputStates.tel.valid) {
                         inputStates.tel.errMessage = 'Not empty';
-                    } else {
+                    }
+                    else if (isPhoneNumber(inputStates.tel.value) && (inputStates.tel.valid)){
                         inputStates.tel.errMessage = '';
+                    }
+                    else if (!isPhoneNumber(inputStates.tel.value) || !(inputStates.tel.valid)) {
+                        inputStates.tel.errMessage = 'phone wrong';
+                        inputStates.tel.valid = false;
                     }
                     break;
             }
@@ -289,8 +309,8 @@
         }
 
         function resetForm() {
-            fname1 = form.getElementsByClassName('input')[0];
-            fname2 = fname1.querySelector(`input[name="fname"]`).value ='';
+            let fname1 = form.getElementsByClassName('input')[0];
+            let fname2 = fname1.querySelector(`input[name="fname"]`).value ='';
             inputStates.fname.value = fname2.value;
 
             email1 = form.getElementsByClassName('input')[1];
@@ -309,26 +329,39 @@
         function save2Localstorage() {
             let arraySaveString = [];
             let list = 'list';
+            //inputStates.uid = new Date().getUTCMilliseconds();
+            inputStates.uid = createUUID();
+
+            inputStates.fname.valid = Boolean(inputStates.fname.value);
+            inputStates.email.valid = Boolean(inputStates.email.value);
+            inputStates.tel.valid = Boolean(inputStates.tel.value);
             if(typeof (Storage) !=='undefined'){
-
-                if(!localStorage.getItem(list)){
-                    arraySave.push(inputStates);
-                    arraySaveString = JSON.stringify(arraySave);
-                    localStorage.setItem(list,arraySaveString);
-                    localStorage[list] = arraySaveString;
+                if (inputStates.fname.valid && inputStates.email.valid && inputStates.tel.valid) {
+                    if(!localStorage.getItem(list)){
+                        arraySave.push(inputStates);
+                        arraySaveString = JSON.stringify(arraySave);
+                        localStorage.setItem(list,arraySaveString);
+                        localStorage[list] = arraySaveString;
+                    }
+                    else {
+                        arraySaveString =  localStorage.getItem(list);
+                        arraySaveString = JSON.parse(arraySaveString);
+                        arraySaveString.push(inputStates);
+                        arraySaveString = JSON.stringify(arraySaveString);
+                        localStorage[list] = arraySaveString;
+                    }
                 }
-                else {
-                    arraySaveString =  localStorage.getItem(list);
-                    arraySaveString = JSON.parse(arraySaveString);
-                    arraySaveString.push(inputStates);
-                    arraySaveString = JSON.stringify(arraySaveString);
-                    localStorage[list] = arraySaveString;
-                }
-
             }
         }
-        function displayVar(e) {
-            save2Localstorage();
+
+        function save2LocalStorageNewList() {
+            if(typeof (Storage) !=='undefined'){
+                arraySave = JSON.stringify(arraySave);
+                localStorage['list'] = arraySave;
+            }
+
+        }
+        function displayVar() {
             arraySave = localStorage.getItem('list');
             arraySave = JSON.parse(arraySave);
             console.log(arraySave);
@@ -340,8 +373,7 @@
 //     <p> ${item.content.value} </p>
 // __________________`);
 //             });
-            table = document.querySelector('.table');
-            display = table.querySelector('tbody');
+
             let listRemove = display;
 
             while(listRemove.hasChildNodes()) {
@@ -351,7 +383,7 @@
             arraySave.forEach(function (item) {
                 display.insertAdjacentHTML('afterbegin', `
 
-<tr class="posts">
+<tr class="posts" data-uid="${item.uid}">
 
 <td class="post">
 <p class="info__text info__text--name">
@@ -386,6 +418,11 @@ ${item.tel.value}
             });
 
 
+
+        }
+        function renderSubmit(e) {
+            save2Localstorage();
+            displayVar();
             e.preventDefault();
             resetForm();
         }
@@ -412,27 +449,27 @@ ${item.tel.value}
             checkFormCanBeSubmit1();
 
         }
-
-        function checkFormCanBeSubmit() {
-
-            var isReady = true;
-            var obj = Object.keys(inputStates); // ['fname', 'tel']
-
-            for ( let i = 0; i < obj.length; i+=1){
-                if (!inputStates[obj[i]].valid){
-                    isReady = false;
-                    break;
-                }
-            }
-
-            if(!isReady) {
-                btnSubmit.disabled = true;
-            } else {
-                btnSubmit.disabled = false;
-                btnSubmit.style.color = 'black';
-            }
-
-        }
+        //
+        // function checkFormCanBeSubmit() {
+        //
+        //     var isReady = true;
+        //     var obj = Object.keys(inputStates); // ['fname', 'tel']
+        //
+        //     for ( let i = 0; i < obj.length; i+=1){
+        //         if (!inputStates[obj[i]].valid){
+        //             isReady = false;
+        //             break;
+        //         }
+        //     }
+        //
+        //     if(!isReady) {
+        //         btnSubmit.disabled = true;
+        //     } else {
+        //         btnSubmit.disabled = false;
+        //         btnSubmit.style.color = 'black';
+        //     }
+        //
+        // }
 
         function checkFormCanBeSubmit1() {
 
@@ -462,20 +499,90 @@ ${item.tel.value}
             return (false)
         }
 
+        let isPhoneNumber = input => {
+
+            try {
+                let ISD_CODES = [93, 355, 213, 1684, 376, 244, 1264, 672, 1268, 54, 374, 297, 61, 43, 994, 1242, 973, 880, 1246, 375, 32, 501, 229, 1441, 975, 591, 387, 267, 55, 246, 1284, 673, 359, 226, 257, 855, 237, 1, 238, 1345, 236, 235, 56, 86, 61, 61, 57, 269, 682, 506, 385, 53, 599, 357, 420, 243, 45, 253, 1767, 1809, 1829, 1849, 670, 593, 20, 503, 240, 291, 372, 251, 500, 298, 679, 358, 33, 689, 241, 220, 995, 49, 233, 350, 30, 299, 1473, 1671, 502, 441481, 224, 245, 592, 509, 504, 852, 36, 354, 91, 62, 98, 964, 353, 441624, 972, 39, 225, 1876, 81, 441534, 962, 7, 254, 686, 383, 965, 996, 856, 371, 961, 266, 231, 218, 423, 370, 352, 853, 389, 261, 265, 60, 960, 223, 356, 692, 222, 230, 262, 52, 691, 373, 377, 976, 382, 1664, 212, 258, 95, 264, 674, 977, 31, 599, 687, 64, 505, 227, 234, 683, 850, 1670, 47, 968, 92, 680, 970, 507, 675, 595, 51, 63, 64, 48, 351, 1787, 1939, 974, 242, 262, 40, 7, 250, 590, 290, 1869, 1758, 590, 508, 1784, 685, 378, 239, 966, 221, 381, 248, 232, 65, 1721, 421, 386, 677, 252, 27, 82, 211, 34, 94, 249, 597, 47, 268, 46, 41, 963, 886, 992, 255, 66, 228, 690, 676, 1868, 216, 90, 993, 1649, 688, 1340, 256, 380, 971, 44, 1, 598, 998, 678, 379, 58, 84, 681, 212, 967, 260, 263],
+                    //extract numbers from string
+                    thenum = input.match(/[0-9]/).join(""),
+                    totalnums = thenum.length,
+                    last10Digits = parseInt(thenum) % 10000000000,
+                    ISDcode = thenum.substring(0, totalnums - 10);
+
+                //phone numbers are generally of 8 to 16 digits
+                if (totalnums >= 8 && totalnums <= 16) {
+                    if (ISDcode) {
+                        if (ISD_CODES.includes(parseInt(ISDcode))) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return true;
+                    }
+                }
+            } catch (e) {}
+
+            return false;
+        }
+
+        function removeList(e) {
+            let checkHasClass = e.target.parentElement;
+            if (checkHasClass.classList.contains('fa-trash')){
+                removeButton = e.target;
+                postOfRemoveButton = removeButton.parentElement.parentElement.parentElement.parentElement;
+                console.log(postOfRemoveButton);
+
+
+                arraySave = localStorage.getItem('list');
+                arraySave = JSON.parse(arraySave);
+
+                console.log(arraySave);
+
+                arraySave.forEach(function (item) {
+                    if(item.uid === postOfRemoveButton.dataset.uid){
+                        let index = arraySave.indexOf(item);
+                        console.log(index);
+                        console.log(item);
+                        console.log(arraySave);
+                        arraySave.splice(index, 1);
+                        console.log(arraySave);
+                        save2LocalStorageNewList();
+                        displayVar();
+                    }
+                });
+            }
+
+            console.log(checkHasClass);
+            console.log(checkHasClass.classList.contains('fa-trash'));
+
+
+        }
+
+        function removeItem(array, item){
+            for(let i in array){
+                if(array[i] === item){
+                    array.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
         function init() {
             btnSubmit.disabled = true;
             inputs.forEach(function (inputt) {
                 inputt.addEventListener('input', inputChange)
             })
-            form.addEventListener('submit',displayVar);
-
-
+            form.addEventListener('submit',renderSubmit);
+            display.addEventListener('click',removeList);
         }
 
         function unLoad() {
             inputs.forEach(function (input) {
                 input.removeEventListener('input', inputChange)
             });
+            form.removeEventListener('submit',renderSubmit);
+            display.removeEventListener('click',removeList);
         }
 
 
