@@ -17,7 +17,7 @@
         this.cl = cl;
         this.v = 1;
 
-        var privateProp = 10;
+        this.privateProp = 1099;
 
         function name() {
             this.name = 10;
@@ -30,16 +30,17 @@
 
     Student.prototype = {
         printName: function () {
-            console.log(privateProp)
+            console.log(this.privateProp)
             console.log('Name is ' + this.name);
-            Student.printClass.bind(this)();
+            console.log('v is ' + this.v);
+            //Student.printClass.bind(this)();
         }
     };
 
-
     Student.printClass = function () {
       console.log(this.printClass);
-      console.log(this.printName);
+      console.log(Student.prototype.printName.bind(this)());
+        this.cl = 999
       console.log(this.cl);
     };
 
@@ -59,7 +60,7 @@
         }
     });
 
-    hs2.name = 'Duc fake';
+    hs2[name] = 'Duc fake';
 
     hs2.printName()
 

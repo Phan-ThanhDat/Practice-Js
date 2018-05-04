@@ -33,7 +33,7 @@
 
     }
 
-    var a = Person.setFullNames;
+    var a = Person.setFullName;
     Person.prototype = {
         getFullName: function () {
             return this.lastName + " " + this.firstName;
@@ -42,8 +42,9 @@
 
 
     function Student(op) {
-        Student.call(Person, op.lastName, op.firstName);
+        //Student.call(Person, op.lastName, op.firstName);
         //Person.call(this, op.lastName, op.firstName)
+        this.firstName = op.firstName;
         this.classRoom = op.classRoom;
     }
 
@@ -68,6 +69,7 @@
     p1 =  new Person('duc ','phan')
 
     s1.getFullName;
+    console.log(s1.setFullName)
 </script>
 </body>
 </html>

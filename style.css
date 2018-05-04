@@ -21,9 +21,11 @@
     background-color: #07f;
     border: 1px solid #07f;
     margin-left: 16px;
+    width: 120px;
 }
 
 .btn--cancel {
+    width: 120px;
     color: #07f;
     border: 1px solid #ededed;
 }
@@ -91,6 +93,7 @@
     display: inline-flex;
     justify-content: flex-end;
     flex-grow: 1;
+    padding-left: 16px;
 }
 
 .list__name {
@@ -102,7 +105,6 @@
 }
 
 .list__input-btn {
-    display: flex;
     align-items: center;
     padding-top: 16px;
     padding-bottom: 16px;
@@ -125,7 +127,9 @@
     padding-left: 8px;
     font-weight: 500;
 }
-
+#form-worker {
+    display: flex;
+}
 .list__edit-save {
     background-color: #fff;
     display: flex;
@@ -133,6 +137,7 @@
 }
 .inputs{
     display: flex;
+    width: 100%;
 }
 .input {
     margin-left: 16px;
@@ -161,11 +166,11 @@
 }
 
 .input__editing {
-    margin-left: 16px;
+    margin-right: 32px;
     padding-left: 16px;
     padding-right: 16px;
     height: 40px;
-    width: 27%;
+    width: 30%;
     background-color: #f9f9f9;
     border: 1px solid #eae3e3;
     color: #505050;
@@ -173,7 +178,7 @@
 }
 
 .input__editing--mail {
-    width: 40%;
+    width: 30%;
 }
 
 .info {

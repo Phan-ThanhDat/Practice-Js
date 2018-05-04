@@ -74,102 +74,24 @@
                     </thead>
 
                     <tbody>
-                    <tr>
-                        <td>
-                            <p class="info__text info__text--name">Joe Doe</p>
-                        </td>
-                        <td>
-                            <p class="info__text info__text--mail">john.doe@gmail.com</p>
-                        </td>
-                        <td>
-                            <p class="info__text info__text--tel">0405678471</p>
-                        </td>
-                        <td>
-                            <div class="list__cover-icons">
-                                <i class="fas fa-pencil-alt info__icon"></i>
-                                <i class="fas fa-trash info__icon"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p class="info__text info__text--name">George Clooney</p>
-                        </td>
-                        <td>
-                            <p class="info__text info__text--mail">george.clooney@hollywood.com</p>
-                        </td>
-                        <td>
-                            <p class="info__text info__text--tel">0504629898</p>
-                        </td>
-                        <td>
-                            <div class="list__cover-icons">
-                                <i class="fas fa-pencil-alt info__icon"></i>
-                                <i class="fas fa-trash info__icon"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p class="info__text info__text--name"> Clooney</p>
-                        </td>
-                        <td>
-                            <p class="info__text info__text--mail">george.clooney@hollywood.com</p>
-                        </td>
-                        <td>
-                            <p class="info__text info__text--tel">0504629898</p>
-                        </td>
-                        <td>
-                            <div class="list__cover-icons">
-                                <i class="fas fa-pencil-alt info__icon"></i>
-                                <i class="fas fa-trash info__icon"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p class="info__text info__text--name"> Clooney</p>
-                        </td>
-                        <td>
-                            <p class="info__text info__text--mail">george.clooney@hollywood.com</p>
-                        </td>
-                        <td>
-                            <p class="info__text info__text--tel">0504629898</p>
-                        </td>
-                        <td>
-                            <div class="list__cover-icons">
-                                <i class="fas fa-pencil-alt info__icon"></i>
-                                <i class="fas fa-trash info__icon"></i>
-                            </div>
-                        </td>
-                    </tr>
+
+
                     </tbody>
+
+
+
+
                 </table>
+
+
+
+
             </div>
 
-            <div class="list__row list__row--infos">
-                <div class="content-input list__edit-save">
-                    <div class="input">
-                        <input type="text" class="input__editing" value="George Clooney">
-                        <input type="email" class="input__editing input__editing--mail"
-                               value="george.clooney@hollywood.com">
-                        <input type="tel" class="input__editing" value="0504629898">
-                    </div>
-                    <div class="list__btn">
-                        <button class="btn btn--cancel">Cancel</button>
-                        <button class="btn btn--save">Save</button>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 
-    <div id="list">
-        <ul>
-            <li class="list-item" data-animal-code="dog" data-id="1">salsla</li>
-            <li class="list-item">Cat</li>
-            <li class="list-item">Rat</li>
-        </ul>
-    </div>
 </div>
 
 <script>
@@ -244,6 +166,7 @@
         };
 
         function inputChange(e) {
+            inputStates.uid = createUUID();
             inputStates[e.target.name].value = e.target.value;
             validateInput(e.target.name);
             //console.log(inputStates)
@@ -330,7 +253,7 @@
             let arraySaveString = [];
             let list = 'list';
             //inputStates.uid = new Date().getUTCMilliseconds();
-            inputStates.uid = createUUID();
+
 
             inputStates.fname.valid = Boolean(inputStates.fname.value);
             inputStates.email.valid = Boolean(inputStates.email.value);
@@ -344,9 +267,12 @@
                         localStorage[list] = arraySaveString;
                     }
                     else {
+                        //get
                         arraySaveString =  localStorage.getItem(list);
                         arraySaveString = JSON.parse(arraySaveString);
+                        //push
                         arraySaveString.push(inputStates);
+                        //save to
                         arraySaveString = JSON.stringify(arraySaveString);
                         localStorage[list] = arraySaveString;
                     }
@@ -364,7 +290,6 @@
         function displayVar() {
             arraySave = localStorage.getItem('list');
             arraySave = JSON.parse(arraySave);
-            console.log(arraySave);
 //             arraySave.forEach(function (item) {
 //                 document.getElementById('display').insertAdjacentHTML('afterbegin', `
 // <h2> Title </h2>
@@ -414,16 +339,16 @@ ${item.tel.value}
 
 
 `);
-                console.log(item);
+
             });
 
 
 
         }
         function renderSubmit(e) {
+            e.preventDefault();
             save2Localstorage();
             displayVar();
-            e.preventDefault();
             resetForm();
         }
 
@@ -542,38 +467,123 @@ ${item.tel.value}
                 arraySave.forEach(function (item) {
                     if(item.uid === postOfRemoveButton.dataset.uid){
                         let index = arraySave.indexOf(item);
-                        console.log(index);
-                        console.log(item);
-                        console.log(arraySave);
+
                         arraySave.splice(index, 1);
-                        console.log(arraySave);
+
                         save2LocalStorageNewList();
                         displayVar();
                     }
                 });
             }
 
-            console.log(checkHasClass);
-            console.log(checkHasClass.classList.contains('fa-trash'));
-
-
         }
 
-        function removeItem(array, item){
-            for(let i in array){
-                if(array[i] === item){
-                    array.splice(i, 1);
-                    break;
+        function editList(e) {
+            let checkHasClass = e.target.parentElement;
+            if (checkHasClass.classList.contains('fa-pencil-alt')){
+                let editButton = e.target;
+                let postOfEditButton = editButton.parentElement.parentElement.parentElement.parentElement;
+                postOfEditButton.style.display = 'none';
+
+                let tableParticipants = document.querySelector('.table');
+                tableParticipants.insertAdjacentHTML('afterend', `
+
+<div class="list__row list__row--infos">
+                    <form class="content-input list__edit-save">
+                        <div class="inputs">
+                            <input type="text" name="fname" class="input__editing" value="George Clooney">
+                            <input type="email" name="email" class="input__editing input__editing--mail"
+                                   value="george.clooney@hollywood.com">
+                            <input type="tel" name="tel" class="input__editing" value="0504629898">
+                        </div>
+
+                        <button class="btn btn--cancel" type="reset">Cancel</button>
+                        <button class="btn btn--save" type="submit">Save</button>
+
+                    </form>
+                </div>
+
+
+`);
+
+                if (document.querySelector('.list__edit-save')){
+                    arraySave = localStorage.getItem('list');
+                    arraySave = JSON.parse(arraySave) || [];
+
+                    let contentInput = document.querySelector('.list__edit-save');
+                    let inputs = contentInput.querySelectorAll('input');
+                    arraySave.forEach(function (item) {
+                        if(item.uid === postOfEditButton.dataset.uid){
+                            let index = arraySave.indexOf(item);
+
+                            contentInput.querySelectorAll('input')[0].value = '';
+                            contentInput.querySelectorAll('input')[1].value = '';
+                            contentInput.querySelectorAll('input')[2].value = '' ;
+
+                            //inputStates = item;
+                            console.log(inputStates);
+
+                            inputs.forEach(function (inputt) {
+                                inputt.addEventListener('input', function (e) {
+                                    inputStates['uid'] = item.uid;
+                                    console.log(e.target.name);
+                                    inputStates[e.target.name].value = e.target.value;
+                                });
+                            });
+                            console.log('checkingnnnnnnn')
+
+                            inputStates.fname.valid = Boolean(inputStates.fname.value);
+                            inputStates.email.valid = Boolean(inputStates.email.value);
+                            inputStates.tel.valid = Boolean(inputStates.tel.value);
+
+                            console.log(inputStates.fname.value)
+                            console.log(inputStates);
+
+                            console.log(arraySave[index]);
+
+                            arraySave.splice(index, 1,inputStates);
+                            // arraySave.splice(index, 0,inputStates);
+                            //arraySave[index] = inputStates;
+
+                            console.log(arraySave[index]);
+
+                            let form = document.querySelector('.list__edit-save');
+                            //save2LocalStorageNewList();
+                            console.log(arraySave);
+
+
+
+                            arraySave = JSON.stringify(arraySave) || '';
+                            console.log(arraySave);
+                            let demo = JSON.parse(arraySave)  || [];
+                            console.log(demo);
+
+
+                            form.addEventListener('submit',function (e) {
+                                e.preventDefault();
+                                save2LocalStorageNewList();
+                                displayVar();
+                            });
+                        }
+                    });
                 }
             }
         }
 
         function init() {
             btnSubmit.disabled = true;
+            arraySave = localStorage.getItem('list');
+            arraySave = JSON.parse(arraySave) || [];
+
+            if (arraySave.length > 0) {
+                displayVar();
+            }
+
             inputs.forEach(function (inputt) {
                 inputt.addEventListener('input', inputChange)
-            })
+            });
             form.addEventListener('submit',renderSubmit);
+            display.addEventListener('click', editList);
             display.addEventListener('click',removeList);
         }
 
@@ -582,6 +592,7 @@ ${item.tel.value}
                 input.removeEventListener('input', inputChange)
             });
             form.removeEventListener('submit',renderSubmit);
+            display.removeEventListener('click', editList);
             display.removeEventListener('click',removeList);
         }
 
@@ -608,6 +619,7 @@ ${item.tel.value}
 
 
     workersModule.init();
+    workersModule.unLoad();
 
 
 
