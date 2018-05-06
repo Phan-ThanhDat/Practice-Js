@@ -1,0 +1,293 @@
+/*COLOR*/
+.btn {
+    background-color: #ededed;
+    font-size: 16px;
+    height: 40px;
+    font-weight: 500;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.btn--add {
+    width: 120px;
+    height: 40px;
+    color: #757575;
+    border: 1px solid #ededed;
+    margin-left: 16px;
+}
+
+.btn--save {
+    color: #fff;
+    background-color: #07f;
+    border: 1px solid #07f;
+    margin-left: 16px;
+    width: 120px;
+}
+
+.btn--cancel {
+    width: 120px;
+    color: #07f;
+    border: 1px solid #ededed;
+}
+
+.header {
+    background-color: #adb5bd;
+}
+
+.header__logo-name-company {
+    display: flex;
+    align-content: center;
+}
+
+.header__logo {
+    height: 32px;
+    width: 32px;
+    background-color: #fff;
+    color: #adb5bd;
+    position: relative;
+}
+
+.header__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -8px;
+    margin-left: -8px;
+}
+
+.header__name-company {
+    margin: 0;
+    padding-left: 32px;
+    font-size: 24px;
+    color: #fff;
+    font-weight: bolder;
+}
+
+.list {
+    background-color: #f1f1f1;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.list__row {
+    background-color: #f1f1f1;
+}
+
+.list__row--adding {
+    padding-bottom: 16px;
+}
+
+.list__row--infos {
+    padding-top: .1mm;
+}
+
+.list__cover-icons {
+    margin-left: auto;
+    display: flex;
+    justify-content: flex-end;
+    flex-grow: 1;
+}
+
+.list__btn {
+    margin-left: auto;
+    display: inline-flex;
+    justify-content: flex-end;
+    flex-grow: 1;
+    padding-left: 16px;
+}
+
+.list__name {
+    margin: 0;
+    padding-bottom: 32px;
+    font-size: 24px;
+    font-weight: bolder;
+    color: #757575;
+}
+
+.list__input-btn {
+    align-items: center;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: #fff;
+}
+
+.list__title {
+    background-color: #fff;
+    display: flex;
+}
+
+.list__t-name-icon {
+    display: flex;
+    align-items: center;
+}
+
+.list__t-icon {
+    font-size: 16px;
+    font-weight: 300;
+    padding-left: 8px;
+    font-weight: 500;
+}
+#form-worker {
+    display: flex;
+}
+.list__edit-save {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+}
+.inputs{
+    display: flex;
+    width: 100%;
+}
+.input {
+    margin-left: 16px;
+    margin-right: 16px;
+    width: 33.3%;
+    padding-bottom: 32px;
+}
+.input__error{
+    padding-top: 8px;
+    color: #ff0000;
+    font-size: 12px;
+}
+.input__adding {
+    padding-left: 16px;
+    padding-right: 16px;
+    border: 1px solid #eae3e3;
+    height: 40px;
+    width: 100%;
+    background-color: #fafafa;
+    color: #909090;
+    font-size: 16px;
+}
+
+.input__adding--mail {
+    width: 100%;
+}
+
+.input__editing {
+    margin-right: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
+    height: 40px;
+    width: 30%;
+    background-color: #f9f9f9;
+    border: 1px solid #eae3e3;
+    color: #505050;
+    font-size: 16px;
+}
+
+.input__editing--mail {
+    width: 30%;
+}
+
+.info {
+    background-color: #fff;
+    display: flex;
+}
+
+.info__text {
+    line-height: 24px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #505050;
+}
+
+.info__icon {
+    font-size: 24px;
+    height: 24px;
+    width: 24px;
+    color: #909090;
+    margin-left: 32px;
+    margin-right: 16px;
+}
+
+.title {
+    margin: 0;
+    line-height: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #757575;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.table th,
+.table td {
+    width: 165px;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 220px;
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    padding-left: 24px;
+}
+
+thead tr {
+    text-align: left;
+    height: 48px;
+    border-bottom: 2px solid #f1f1f1;
+}
+
+tbody tr {
+    text-align: left;
+    height: 72px;
+    border-bottom: 2px solid #f1f1f1;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.view-range {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media screen and (min-width: 976px) {
+    .view-range {
+        width: 750px;
+    }
+}
+
+@media screen and (min-width: 976px) {
+    .view-range {
+        width: 912px;
+    }
+}
+
+@media screen and (min-width: 1280px) {
+    .view-range {
+        width: 1170px;
+    }
+}
+
+.content-header {
+    padding: 32px 0 32px 0;
+}
+
+.content-info {
+    padding: 24px;
+}
+
+.content-input {
+    padding: 16px;
+    padding-bottom: 24px;
+}
+
+p {
+    margin: 0;
+}
+
