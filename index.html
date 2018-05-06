@@ -478,7 +478,7 @@ ${item.tel.value}
 
         }
 
-        function editList(e) {
+        function clickIconEdit(e) {
             let checkHasClass = e.target.parentElement;
             if (checkHasClass.classList.contains('fa-pencil-alt')){
                 let editButton = e.target;
@@ -502,8 +502,6 @@ ${item.tel.value}
 
                     </form>
                 </div>
-
-
 `);
 
                 if (document.querySelector('.list__edit-save')){
@@ -512,62 +510,61 @@ ${item.tel.value}
 
                     let contentInput = document.querySelector('.list__edit-save');
                     let inputs = contentInput.querySelectorAll('input');
+                    alert ('click save icon')
                     arraySave.forEach(function (item) {
                         if(item.uid === postOfEditButton.dataset.uid){
-                            let index = arraySave.indexOf(item);
-
+                            inputStates['uid'] = item.uid;
                             contentInput.querySelectorAll('input')[0].value = '';
                             contentInput.querySelectorAll('input')[1].value = '';
                             contentInput.querySelectorAll('input')[2].value = '' ;
-
-                            //inputStates = item;
-                            console.log(inputStates);
-
-                            inputs.forEach(function (inputt) {
-                                inputt.addEventListener('input', function (e) {
-                                    inputStates['uid'] = item.uid;
-                                    console.log(e.target.name);
-                                    inputStates[e.target.name].value = e.target.value;
-                                });
-                            });
-                            console.log('checkingnnnnnnn')
-
-                            inputStates.fname.valid = Boolean(inputStates.fname.value);
-                            inputStates.email.valid = Boolean(inputStates.email.value);
-                            inputStates.tel.valid = Boolean(inputStates.tel.value);
-
-                            console.log(inputStates.fname.value)
-                            console.log(inputStates);
-
-                            console.log(arraySave[index]);
-
-                            arraySave.splice(index, 1,inputStates);
-                            // arraySave.splice(index, 0,inputStates);
-                            //arraySave[index] = inputStates;
-
-                            console.log(arraySave[index]);
-
-                            let form = document.querySelector('.list__edit-save');
-                            //save2LocalStorageNewList();
-                            console.log(arraySave);
-
-
-
-                            arraySave = JSON.stringify(arraySave) || '';
-                            console.log(arraySave);
-                            let demo = JSON.parse(arraySave)  || [];
-                            console.log(demo);
-
-
-                            form.addEventListener('submit',function (e) {
-                                e.preventDefault();
-                                save2LocalStorageNewList();
-                                displayVar();
-                            });
                         }
                     });
                 }
+                afterClickBtnEditSave();
             }
+        }
+
+        function afterClickBtnEditSave() {
+            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+            alert (checkContaintag.classList.contains('list__edit-save'))
+
+
+                let contentInput = document.querySelector('.list__edit-save');
+                let inputsEdit = contentInput.querySelectorAll('input');
+                inputsEdit.forEach(function (inputt) {
+                    inputt.addEventListener('input', function (e) {
+                        inputStates[e.target.name].value = e.target.value;
+                    });
+                });
+                alert ('check contain list')
+                let inputsCover = checkContaintag.querySelector('.list__edit-save');
+                let btnSave = inputsCover.querySelector('.btn--save');
+                btnSave.addEventListener('click', saveEventEdit);
+
+        }
+
+        function saveEventEdit(e) {
+            alert(inputStates.uid)
+            arraySave.forEach(function (item) {
+                if(item.uid === inputStates.uid) {
+                    let index = arraySave.indexOf(item);
+                    arraySave.splice(index, 1, inputStates);
+                    //arraySave[index] = inputStates;
+                    alert(arraySave[index].fname.value)
+                }
+            });
+
+            let formWorker = document.getElementById('form-worker');
+            formWorker.style.display = 'none';
+            e.preventDefault();
+            alert('check prevent')
+            save2LocalStorageNewList();
+            alert('save event edit')
+            displayVar();
+            formWorker.style.display = 'flex';
+            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+            let inputsCover = checkContaintag.querySelector('.list__edit-save');
+            inputsCover.style.display = 'none';
         }
 
         function init() {
@@ -583,7 +580,27 @@ ${item.tel.value}
                 inputt.addEventListener('input', inputChange)
             });
             form.addEventListener('submit',renderSubmit);
-            display.addEventListener('click', editList);
+
+            display.addEventListener('click', clickIconEdit);
+
+//             let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+//             if (checkContaintag.classList.contains('list__edit-save')){
+//                 let contentInput = document.querySelector('.list__edit-save');
+//                 let inputsEdit = contentInput.querySelectorAll('input');
+//                 inputsEdit.forEach(function (inputt) {
+//                     inputt.addEventListener('input', function (e) {
+//                         inputStates[e.target.name].value = e.target.value;
+//                     });
+//                 });
+// alert ('check contain list')
+//                 let inputsCover = checkContaintag.querySelector('.list__edit-save');
+//                 let btnSave = inputsCover.querySelector('.btn--save');
+//                 btnSave.addEventListener('click', saveEventEdit);
+//             }
+
+
+
+
             display.addEventListener('click',removeList);
         }
 
