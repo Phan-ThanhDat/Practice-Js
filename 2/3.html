@@ -101,9 +101,9 @@
         function init() {
             validateFormWorker.init();
             dataTableWorker.init();
-            validateFormWorker.onSubmitSuccess = function () {
-                dataTableWorker.render();
-            }
+            validateFormWorker.onSubmitSuccess(function (data) {
+                dataTableWorker.add(data);
+            })
         }
 
 
@@ -144,7 +144,7 @@
         var inputs = form.querySelectorAll('input');
         let table = document.querySelector('.table');
         let display = table.querySelector('tbody');
-
+        var onSubmitSuccessCb;
         var inputStates = {
             uid : '',
             fname: {
@@ -162,6 +162,7 @@
                 valid: false,
                 errMessage: '',
             }
+
         };
 
         function inputChange(e) {
@@ -186,7 +187,7 @@
             return uuid;
         }
 
-            function validateInput(input) {
+        function validateInput(input) {
             switch (input) {
                 case 'fname':
                     inputStates.fname.valid = Boolean(inputStates.fname.value);
@@ -340,15 +341,17 @@ ${item.tel.value}
 `);
 
             });
-
-
-
         }
         function renderSubmit(e) {
             e.preventDefault();
             save2Localstorage();
             displayVar();
             resetForm();
+            if(onSubmitSuccessCb) {
+                //onSubmitSuccessCb(data)
+            }
+
+            // onSubmitSuccessCb(data)
         }
 
         function renderInput(input) {
@@ -373,27 +376,7 @@ ${item.tel.value}
             checkFormCanBeSubmit1();
 
         }
-        //
-        // function checkFormCanBeSubmit() {
-        //
-        //     var isReady = true;
-        //     var obj = Object.keys(inputStates); // ['fname', 'tel']
-        //
-        //     for ( let i = 0; i < obj.length; i+=1){
-        //         if (!inputStates[obj[i]].valid){
-        //             isReady = false;
-        //             break;
-        //         }
-        //     }
-        //
-        //     if(!isReady) {
-        //         btnSubmit.disabled = true;
-        //     } else {
-        //         btnSubmit.disabled = false;
-        //         btnSubmit.style.color = 'black';
-        //     }
-        //
-        // }
+
 
         function checkFormCanBeSubmit1() {
 
@@ -477,7 +460,7 @@ ${item.tel.value}
 
         }
 
-        function clickIconEdit(e) {
+        function editList(e) {
             let checkHasClass = e.target.parentElement;
             if (checkHasClass.classList.contains('fa-pencil-alt')){
                 let editButton = e.target;
@@ -490,10 +473,10 @@ ${item.tel.value}
 <div class="list__row list__row--infos">
                     <form class="content-input list__edit-save">
                         <div class="inputs">
-                            <input type="text" name="fname" class="input__editing" value="George Clooney">
+                            <input type="text" name="fname" class="input__editing" value="">
                             <input type="email" name="email" class="input__editing input__editing--mail"
-                                   value="george.clooney@hollywood.com">
-                            <input type="tel" name="tel" class="input__editing" value="0504629898">
+                                   value="">
+                            <input type="tel" name="tel" class="input__editing" value="">
                         </div>
 
                         <button class="btn btn--cancel" type="reset">Cancel</button>
@@ -501,6 +484,8 @@ ${item.tel.value}
 
                     </form>
                 </div>
+
+
 `);
 
                 if (document.querySelector('.list__edit-save')){
@@ -509,61 +494,62 @@ ${item.tel.value}
 
                     let contentInput = document.querySelector('.list__edit-save');
                     let inputs = contentInput.querySelectorAll('input');
-                    alert ('click save icon')
                     arraySave.forEach(function (item) {
                         if(item.uid === postOfEditButton.dataset.uid){
-                            inputStates['uid'] = item.uid;
+                            let index = arraySave.indexOf(item);
+
                             contentInput.querySelectorAll('input')[0].value = '';
                             contentInput.querySelectorAll('input')[1].value = '';
                             contentInput.querySelectorAll('input')[2].value = '' ;
+
+                            //inputStates = item;
+                            console.log(inputStates);
+
+                            inputs.forEach(function (inputt) {
+                                inputt.addEventListener('input', function (e) {
+                                    inputStates['uid'] = item.uid;
+                                    console.log(e.target.name);
+                                    inputStates[e.target.name].value = e.target.value;
+                                });
+                            });
+                            console.log('checkingnnnnnnn')
+
+                            inputStates.fname.valid = Boolean(inputStates.fname.value);
+                            inputStates.email.valid = Boolean(inputStates.email.value);
+                            inputStates.tel.valid = Boolean(inputStates.tel.value);
+
+                            console.log(inputStates.fname.value)
+                            console.log(inputStates);
+
+                            console.log(arraySave[index]);
+
+                            arraySave.splice(index, 1,inputStates);
+                            // arraySave.splice(index, 0,inputStates);
+                            //arraySave[index] = inputStates;
+
+                            console.log(arraySave[index]);
+
+                            let form = document.querySelector('.list__edit-save');
+                            //save2LocalStorageNewList();
+                            console.log(arraySave);
+
+
+
+                            arraySave = JSON.stringify(arraySave) || '';
+                            console.log(arraySave);
+                            let demo = JSON.parse(arraySave)  || [];
+                            console.log(demo);
+
+
+                            form.addEventListener('submit',function (e) {
+                                e.preventDefault();
+                                save2LocalStorageNewList();
+                                displayVar();
+                            });
                         }
                     });
                 }
-                afterClickBtnEditSave();
             }
-        }
-
-        function afterClickBtnEditSave() {
-            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
-            alert (checkContaintag.classList.contains('list__edit-save'))
-
-
-                let contentInput = document.querySelector('.list__edit-save');
-                let inputsEdit = contentInput.querySelectorAll('input');
-                inputsEdit.forEach(function (inputt) {
-                    inputt.addEventListener('input', function (e) {
-                        inputStates[e.target.name].value = e.target.value;
-                    });
-                });
-                alert ('check contain list')
-                let inputsCover = checkContaintag.querySelector('.list__edit-save');
-                let btnSave = inputsCover.querySelector('.btn--save');
-                btnSave.addEventListener('click', saveEventEdit);
-
-        }
-
-        function saveEventEdit(e) {
-            alert(inputStates.uid)
-            arraySave.forEach(function (item) {
-                if(item.uid === inputStates.uid) {
-                    let index = arraySave.indexOf(item);
-                    arraySave.splice(index, 1, inputStates);
-                    //arraySave[index] = inputStates;
-                    alert(arraySave[index].fname.value)
-                }
-            });
-
-            let formWorker = document.getElementById('form-worker');
-            formWorker.style.display = 'none';
-            e.preventDefault();
-            alert('check prevent')
-            save2LocalStorageNewList();
-            alert('save event edit')
-            displayVar();
-            formWorker.style.display = 'flex';
-            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
-            let inputsCover = checkContaintag.querySelector('.list__edit-save');
-            inputsCover.style.display = 'none';
         }
 
         function init() {
@@ -579,27 +565,7 @@ ${item.tel.value}
                 inputt.addEventListener('input', inputChange)
             });
             form.addEventListener('submit',renderSubmit);
-
-            display.addEventListener('click', clickIconEdit);
-
-//             let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
-//             if (checkContaintag.classList.contains('list__edit-save')){
-//                 let contentInput = document.querySelector('.list__edit-save');
-//                 let inputsEdit = contentInput.querySelectorAll('input');
-//                 inputsEdit.forEach(function (inputt) {
-//                     inputt.addEventListener('input', function (e) {
-//                         inputStates[e.target.name].value = e.target.value;
-//                     });
-//                 });
-// alert ('check contain list')
-//                 let inputsCover = checkContaintag.querySelector('.list__edit-save');
-//                 let btnSave = inputsCover.querySelector('.btn--save');
-//                 btnSave.addEventListener('click', saveEventEdit);
-//             }
-
-
-
-
+            display.addEventListener('click', editList);
             display.addEventListener('click',removeList);
         }
 
@@ -613,22 +579,120 @@ ${item.tel.value}
         }
 
 
+        function onSubmitSuccess(cb) {
+            onSubmitSuccessCb = cb
+        }
+
         return {
             init: init,
             unLoad: unLoad,
+            onSubmitSuccess: onSubmitSuccess
         }
 
     })();
 
     dataTableWorker = (function () {
 
-        function init() {
+        var list;
+        var isEditUid;
+        var editRowStates = {
+            fname: '',
+            //...
+        }
 
+        function init() {
+            loadData();
+            renderAll();
         }
 
 
+        function loadData() {
+
+        }
+
+        function syncData() {
+
+        }
+
+        function removeEvent(uid) {
+            if(uid) {
+                // tim   nut edit uid=> remove event and callback editRow
+                // tim  nut xoa uid=> remove event and callback deleteRow
+            }
+            else {
+                // tim toan bo nut edit => remove event and callback editRow
+                // tim toan bo nut xoa => remove event and callback deleteRow
+                // tim toan bo nut save and cancel => remove event callback saveEdit and cancelEdit
+            }
+
+        }
+
+        function setEvent(uid) {
+            if(uid) {
+
+            } else {
+
+            }
+            // tim toan bo nut edit => set event and callback editRow
+            // tim toan bo nut xoa => set event and callback deleteRow
+        }
+
+        function editRow() {
+            // set state isEditUid = uid
+            // render => 3 input => validate => setEvent
+            //
+            // set event cho 2 cai nut save va cancel => khi dung edit phai xoa event 2 nut save and delete
+        }
+
+        function saveEdit() {
+            // doc isEditUid
+            // doc editRowStates
+            // set states cho list
+            syncData();
+            renderAll();
+            // renderAll(uid, 'edit');
+        }
+
+        function cancelEdit() {
+            isEditUid = null;
+            renderAll();
+        }
+
+        function deleteRow() {
+            // Xoa data no list
+            // Sync data
+            syncData();
+            renderAll();
+        }
+
+
+        function renderRow(uid, action) {
+            // add = > [ush row => set evbent uid
+            // remove => xoa event uid => xoa table
+        }
+
+        function renderAll () {
+            // renderRow(uid, action);
+            removeEvent();
+            //...
+            // Doc list = > render
+            // if uid row  === isEditUid => render 3 input
+
+            setEvent();
+        }
+
+
+        function add(data) {
+            // set data moi => push
+            // tap uid moi => set vao list {uid: data, uidx/...}
+            syncData();
+            renderAll();
+        }
+
         return {
+            renderAll : renderAll,
             init: init,
+            add: add,
         }
 
     })();

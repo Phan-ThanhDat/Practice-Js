@@ -99,10 +99,11 @@
     workersModule = (function () {
 
         function init() {
+            let form = document.getElementById('form-worker');
             validateFormWorker.init();
             dataTableWorker.init();
             validateFormWorker.onSubmitSuccess(function (data) {
-                dataTableWorker.add(data);
+                form.addEventListener('submit',dataTableWorker.add(data));
             })
         }
 
@@ -187,7 +188,7 @@
             return uuid;
         }
 
-            function validateInput(input) {
+        function validateInput(input) {
             switch (input) {
                 case 'fname':
                     inputStates.fname.valid = Boolean(inputStates.fname.value);
@@ -231,132 +232,7 @@
 
         }
 
-        function resetForm() {
-            let fname1 = form.getElementsByClassName('input')[0];
-            let fname2 = fname1.querySelector(`input[name="fname"]`).value ='';
-            inputStates.fname.value = fname2.value;
-
-            email1 = form.getElementsByClassName('input')[1];
-            email2 = email1.querySelector(`input[name="email"]`).value ='';
-            inputStates.email.value = email2.value;
-
-            tel1 = form.getElementsByClassName('input')[2];
-            tel2 = tel1.querySelector(`input[name="tel"]`).value ='';
-            inputStates.tel.value = tel2.value;
-
-            btnSubmit.disabled = true;
-            btnSubmit.style.color = 'white'
-        }
-
-
-        function save2Localstorage() {
-            let arraySaveString = [];
-            let list = 'list';
-            //inputStates.uid = new Date().getUTCMilliseconds();
-
-
-            inputStates.fname.valid = Boolean(inputStates.fname.value);
-            inputStates.email.valid = Boolean(inputStates.email.value);
-            inputStates.tel.valid = Boolean(inputStates.tel.value);
-            if(typeof (Storage) !=='undefined'){
-                if (inputStates.fname.valid && inputStates.email.valid && inputStates.tel.valid) {
-                    if(!localStorage.getItem(list)){
-                        arraySave.push(inputStates);
-                        arraySaveString = JSON.stringify(arraySave);
-                        localStorage.setItem(list,arraySaveString);
-                        localStorage[list] = arraySaveString;
-                    }
-                    else {
-                        //get
-                        arraySaveString =  localStorage.getItem(list);
-                        arraySaveString = JSON.parse(arraySaveString);
-                        //push
-                        arraySaveString.push(inputStates);
-                        //save to
-                        arraySaveString = JSON.stringify(arraySaveString);
-                        localStorage[list] = arraySaveString;
-                    }
-                }
-            }
-        }
-
-        function save2LocalStorageNewList() {
-            if(typeof (Storage) !=='undefined'){
-                arraySave = JSON.stringify(arraySave);
-                localStorage['list'] = arraySave;
-            }
-
-        }
-        function displayVar() {
-            arraySave = localStorage.getItem('list');
-            arraySave = JSON.parse(arraySave);
-//             arraySave.forEach(function (item) {
-//                 document.getElementById('display').insertAdjacentHTML('afterbegin', `
-// <h2> Title </h2>
-//     <p>${item.title.value} </p>
-// <h3> Content </h3>
-//     <p> ${item.content.value} </p>
-// __________________`);
-//             });
-
-            let listRemove = display;
-
-            while(listRemove.hasChildNodes()) {
-                listRemove.removeChild(listRemove.firstChild);
-            }
-
-            arraySave.forEach(function (item) {
-                display.insertAdjacentHTML('afterbegin', `
-
-<tr class="posts" data-uid="${item.uid}">
-
-<td class="post">
-<p class="info__text info__text--name">
-${item.fname.value}
-</p>
-</td>
-
-<td class="post">
-<p class="info__text info__text--mail">
-${item.email.value}
-</p>
-</td>
-
-<td class="post">
-<p class="info__text info__text--tel">
-${item.tel.value}
-</p>
-</td>
-
-<td>
-<div class="list__cover-icons">
-<i class="fas fa-pencil-alt info__icon"></i>
-<i class="fas fa-trash info__icon"></i>
-</div>
-</td>
-
-</tr>
-
-
-`);
-
-            });
-
-
-
-        }
-        function renderSubmit(e) {
-            e.preventDefault();
-            save2Localstorage();
-            displayVar();
-            resetForm();
-            if(onSubmitSuccessCb) {
-                //onSubmitSuccessCb(data)
-            }
-
-            // onSubmitSuccessCb(data)
-        }
-
+        //render input if it is wrong
         function renderInput(input) {
             var inputSelector = form.querySelector(`input[name="${input}"]`);
 
@@ -379,27 +255,7 @@ ${item.tel.value}
             checkFormCanBeSubmit1();
 
         }
-        //
-        // function checkFormCanBeSubmit() {
-        //
-        //     var isReady = true;
-        //     var obj = Object.keys(inputStates); // ['fname', 'tel']
-        //
-        //     for ( let i = 0; i < obj.length; i+=1){
-        //         if (!inputStates[obj[i]].valid){
-        //             isReady = false;
-        //             break;
-        //         }
-        //     }
-        //
-        //     if(!isReady) {
-        //         btnSubmit.disabled = true;
-        //     } else {
-        //         btnSubmit.disabled = false;
-        //         btnSubmit.style.color = 'black';
-        //     }
-        //
-        // }
+
 
         function checkFormCanBeSubmit1() {
 
@@ -456,140 +312,15 @@ ${item.tel.value}
             return false;
         }
 
-        function removeList(e) {
-            let checkHasClass = e.target.parentElement;
-            if (checkHasClass.classList.contains('fa-trash')){
-                removeButton = e.target;
-                postOfRemoveButton = removeButton.parentElement.parentElement.parentElement.parentElement;
-                console.log(postOfRemoveButton);
-
-
-                arraySave = localStorage.getItem('list');
-                arraySave = JSON.parse(arraySave);
-
-                console.log(arraySave);
-
-                arraySave.forEach(function (item) {
-                    if(item.uid === postOfRemoveButton.dataset.uid){
-                        let index = arraySave.indexOf(item);
-
-                        arraySave.splice(index, 1);
-
-                        save2LocalStorageNewList();
-                        displayVar();
-                    }
-                });
-            }
-
-        }
-
-        function editList(e) {
-            let checkHasClass = e.target.parentElement;
-            if (checkHasClass.classList.contains('fa-pencil-alt')){
-                let editButton = e.target;
-                let postOfEditButton = editButton.parentElement.parentElement.parentElement.parentElement;
-                postOfEditButton.style.display = 'none';
-
-                let tableParticipants = document.querySelector('.table');
-                tableParticipants.insertAdjacentHTML('afterend', `
-
-<div class="list__row list__row--infos">
-                    <form class="content-input list__edit-save">
-                        <div class="inputs">
-                            <input type="text" name="fname" class="input__editing" value="">
-                            <input type="email" name="email" class="input__editing input__editing--mail"
-                                   value="">
-                            <input type="tel" name="tel" class="input__editing" value="">
-                        </div>
-
-                        <button class="btn btn--cancel" type="reset">Cancel</button>
-                        <button class="btn btn--save" type="submit">Save</button>
-
-                    </form>
-                </div>
-
-
-`);
-
-                if (document.querySelector('.list__edit-save')){
-                    arraySave = localStorage.getItem('list');
-                    arraySave = JSON.parse(arraySave) || [];
-
-                    let contentInput = document.querySelector('.list__edit-save');
-                    let inputs = contentInput.querySelectorAll('input');
-                    arraySave.forEach(function (item) {
-                        if(item.uid === postOfEditButton.dataset.uid){
-                            let index = arraySave.indexOf(item);
-
-                            contentInput.querySelectorAll('input')[0].value = '';
-                            contentInput.querySelectorAll('input')[1].value = '';
-                            contentInput.querySelectorAll('input')[2].value = '' ;
-
-                            //inputStates = item;
-                            console.log(inputStates);
-
-                            inputs.forEach(function (inputt) {
-                                inputt.addEventListener('input', function (e) {
-                                    inputStates['uid'] = item.uid;
-                                    console.log(e.target.name);
-                                    inputStates[e.target.name].value = e.target.value;
-                                });
-                            });
-                            console.log('checkingnnnnnnn')
-
-                            inputStates.fname.valid = Boolean(inputStates.fname.value);
-                            inputStates.email.valid = Boolean(inputStates.email.value);
-                            inputStates.tel.valid = Boolean(inputStates.tel.value);
-
-                            console.log(inputStates.fname.value)
-                            console.log(inputStates);
-
-                            console.log(arraySave[index]);
-
-                            arraySave.splice(index, 1,inputStates);
-                            // arraySave.splice(index, 0,inputStates);
-                            //arraySave[index] = inputStates;
-
-                            console.log(arraySave[index]);
-
-                            let form = document.querySelector('.list__edit-save');
-                            //save2LocalStorageNewList();
-                            console.log(arraySave);
-
-
-
-                            arraySave = JSON.stringify(arraySave) || '';
-                            console.log(arraySave);
-                            let demo = JSON.parse(arraySave)  || [];
-                            console.log(demo);
-
-
-                            form.addEventListener('submit',function (e) {
-                                e.preventDefault();
-                                save2LocalStorageNewList();
-                                displayVar();
-                            });
-                        }
-                    });
-                }
-            }
-        }
 
         function init() {
             btnSubmit.disabled = true;
-            arraySave = localStorage.getItem('list');
-            arraySave = JSON.parse(arraySave) || [];
-
-            if (arraySave.length > 0) {
-                displayVar();
-            }
 
             inputs.forEach(function (inputt) {
                 inputt.addEventListener('input', inputChange)
             });
             form.addEventListener('submit',renderSubmit);
-            display.addEventListener('click', editList);
-            display.addEventListener('click',removeList);
+
         }
 
         function unLoad() {
@@ -601,6 +332,32 @@ ${item.tel.value}
             display.removeEventListener('click',removeList);
         }
 
+        function renderSubmit(e) {
+            e.preventDefault();
+
+            if(onSubmitSuccessCb) {
+                onSubmitSuccessCb(inputStates);
+                resetForm();
+            }
+
+            //onSubmitSuccessCb(arraySave)
+        }
+        function resetForm() {
+            let fname1 = form.getElementsByClassName('input')[0];
+            let fname2 = fname1.querySelector(`input[name="fname"]`).value ='';
+            inputStates.fname.value = fname2.value;
+
+            email1 = form.getElementsByClassName('input')[1];
+            email2 = email1.querySelector(`input[name="email"]`).value ='';
+            inputStates.email.value = email2.value;
+
+            tel1 = form.getElementsByClassName('input')[2];
+            tel2 = tel1.querySelector(`input[name="tel"]`).value ='';
+            inputStates.tel.value = tel2.value;
+
+            btnSubmit.disabled = true;
+            btnSubmit.style.color = 'white'
+        }
 
         function onSubmitSuccess(cb) {
             onSubmitSuccessCb = cb
@@ -616,104 +373,196 @@ ${item.tel.value}
 
     dataTableWorker = (function () {
 
-        var list;
-        var isEditUid;
-        var editRowStates = {
-            fname: '',
-            //...
-        }
+         var arraySave = localStorage.getItem('list');
+         arraySave = JSON.parse(arraySave) || [];
 
+        // var isEditUid;
+        // var editRowStates = {
+        //     fname: '',
+        //     //...
+        // }
+        //
         function init() {
-            loadData();
-            renderAll();
+            // loadData();
+            // renderAll();
         }
-
-
-        function loadData() {
-
-        }
-
-        function syncData() {
-
-        }
-
-        function removeEvent(uid) {
-            if(uid) {
-                // tim   nut edit uid=> remove event and callback editRow
-                // tim  nut xoa uid=> remove event and callback deleteRow
-            }
-            else {
-                // tim toan bo nut edit => remove event and callback editRow
-                // tim toan bo nut xoa => remove event and callback deleteRow
-                // tim toan bo nut save and cancel => remove event callback saveEdit and cancelEdit
-            }
-
-        }
-
-        function setEvent(uid) {
-            if(uid) {
-
-            } else {
-
-            }
-                // tim toan bo nut edit => set event and callback editRow
-                // tim toan bo nut xoa => set event and callback deleteRow
-        }
-
-        function editRow() {
-            // set state isEditUid = uid
-            // render => 3 input => validate => setEvent
-            //
-            // set event cho 2 cai nut save va cancel => khi dung edit phai xoa event 2 nut save and delete
-        }
-
-        function saveEdit() {
-            // doc isEditUid
-            // doc editRowStates
-            // set states cho list
-            syncData();
-            renderAll();
-            // renderAll(uid, 'edit');
-        }
-
-        function cancelEdit() {
-            isEditUid = null;
-            renderAll();
-        }
-
-        function deleteRow() {
-            // Xoa data no list
-            // Sync data
-            syncData();
-            renderAll();
-        }
-
-
-        function renderRow(uid, action) {
-            // add = > [ush row => set evbent uid
-            // remove => xoa event uid => xoa table
-        }
-
+        //
+        //
+        // function loadData() {
+        //
+        // }
+        //
+        // function syncData() {
+        //
+        // }
+        //
+        // function removeEvent(uid) {
+        //     if(uid) {
+        //         // tim   nut edit uid=> remove event and callback editRow
+        //         // tim  nut xoa uid=> remove event and callback deleteRow
+        //     }
+        //     else {
+        //         // tim toan bo nut edit => remove event and callback editRow
+        //         // tim toan bo nut xoa => remove event and callback deleteRow
+        //         // tim toan bo nut save and cancel => remove event callback saveEdit and cancelEdit
+        //     }
+        //
+        // }
+        //
+        // function setEvent(uid) {
+        //     if(uid) {
+        //
+        //     } else {
+        //
+        //     }
+        //         // tim toan bo nut edit => set event and callback editRow
+        //         // tim toan bo nut xoa => set event and callback deleteRow
+        // }
+        //
+        // function editRow() {
+        //     // set state isEditUid = uid
+        //     // render => 3 input => validate => setEvent
+        //     //
+        //     // set event cho 2 cai nut save va cancel => khi dung edit phai xoa event 2 nut save and delete
+        // }
+        //
+        // function saveEdit() {
+        //     // doc isEditUid
+        //     // doc editRowStates
+        //     // set states cho list
+        //     syncData();
+        //     renderAll();
+        //     // renderAll(uid, 'edit');
+        // }
+        //
+        // function cancelEdit() {
+        //     isEditUid = null;
+        //     renderAll();
+        // }
+        //
+        // function deleteRow() {
+        //     // Xoa data no list
+        //     // Sync data
+        //     syncData();
+        //     renderAll();
+        // }
+        //
+        //
+        // function renderRow(uid, action) {
+        //     // add = > [ush row => set evbent uid
+        //     // remove => xoa event uid => xoa table
+        // }
+        //
         function renderAll () {
             // renderRow(uid, action);
-            removeEvent();
+            //removeEvent();
             //...
             // Doc list = > render
             // if uid row  === isEditUid => render 3 input
 
-            setEvent();
+            //setEvent();
+            arraySave = localStorage.getItem('list');
+            arraySave = JSON.parse(arraySave);
+//             arraySave.forEach(function (item) {
+//                 document.getElementById('display').insertAdjacentHTML('afterbegin', `
+// <h2> Title </h2>
+//     <p>${item.title.value} </p>
+// <h3> Content </h3>
+//     <p> ${item.content.value} </p>
+// __________________`);
+//             });
+
+            let table = document.querySelector('.table');
+            let display = table.querySelector('tbody');
+            let listRemove = display;
+
+            while(listRemove.hasChildNodes()) {
+                listRemove.removeChild(listRemove.firstChild);
+            }
+
+            arraySave.forEach(function (item) {
+                display.insertAdjacentHTML('afterbegin', `
+
+<tr class="posts" data-uid="${item.uid}">
+
+<td class="post">
+<p class="info__text info__text--name">
+${item.fname.value}
+</p>
+</td>
+
+<td class="post">
+<p class="info__text info__text--mail">
+${item.email.value}
+</p>
+</td>
+
+<td class="post">
+<p class="info__text info__text--tel">
+${item.tel.value}
+</p>
+</td>
+
+<td>
+<div class="list__cover-icons">
+<i class="fas fa-pencil-alt info__icon"></i>
+<i class="fas fa-trash info__icon"></i>
+</div>
+</td>
+
+</tr>
+
+
+`);
+            });
+
         }
+        //
+        //
+        function savetoLocalStorage(data) {
+            let arraySaveString = [];
+            let list = 'list';
+            //inputStates.uid = new Date().getUTCMilliseconds();
 
 
+            data.fname.valid = Boolean(data.fname.value);
+            data.email.valid = Boolean(data.email.value);
+            data.tel.valid = Boolean(data.tel.value);
+            if(typeof (Storage) !=='undefined'){
+                if (data.fname.valid && data.email.valid && data.tel.valid) {
+                    if(!localStorage.getItem(list)){
+                        arraySave.push(data);
+                        arraySaveString = JSON.stringify(arraySave);
+                        localStorage.setItem(list,arraySaveString);
+                        localStorage[list] = arraySaveString;
+                    }
+                    else {
+                        //get
+                        arraySaveString =  localStorage.getItem(list);
+                        arraySaveString = JSON.parse(arraySaveString);
+                        //push
+                        arraySaveString.push(data);
+                        //save to
+                        arraySaveString = JSON.stringify(arraySaveString);
+                        localStorage[list] = arraySaveString;
+                    }
+                }
+            }
+
+        }
         function add(data) {
             // set data moi => push
             // tap uid moi => set vao list {uid: data, uidx/...}
-            syncData();
+
+            savetoLocalStorage(data);
+
+            //syncData();
+
             renderAll();
         }
 
         return {
-            renderAll : renderAll,
+            //renderAll : renderAll,
             init: init,
             add: add,
         }
