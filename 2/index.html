@@ -201,6 +201,7 @@
             validateInput(input);
         }
         function validateInput(input) {
+            console.log(inputStates)
             switch (input) {
                 case 'fname':
                     inputStates.fname.valid = Boolean(inputStates.fname.value);
@@ -590,8 +591,18 @@ ${item.tel.value}
             console.log(inputsEdit)
             let inputsCover = checkContaintag.querySelector('.list__edit-save');
             let btnSave = inputsCover.querySelector('.btn--save');
+            let btnCancel = inputsCover.querySelector('.btn--cancel');
             btnSave.addEventListener('click', saveEventEdit);
-
+            btnCancel.addEventListener('click',cancelEdit);
+        }
+        function cancelEdit(e) {
+            e.preventDefault();
+            let formEdit = document.querySelector('.list__edit-save');
+            formEdit.style.display = 'none';
+            e.preventDefault();
+            displayVar();
+            let formAdd = document.querySelector('.list__input-btn');
+            formAdd.style.display = 'block';
         }
 
         function saveEventEdit(e) {
@@ -653,9 +664,9 @@ ${item.tel.value}
                     arraySave.forEach(function (item) {
                         if(item.uid === postOfEditButton.dataset.uid){
                             inputStates['uid'] = item.uid;
-                            contentInput.querySelectorAll('input')[0].value = '';
-                            contentInput.querySelectorAll('input')[1].value = '';
-                            contentInput.querySelectorAll('input')[2].value = '' ;
+                            contentInput.querySelectorAll('input')[0].value = 'w';
+                            contentInput.querySelectorAll('input')[1].value = 'w';
+                            contentInput.querySelectorAll('input')[2].value = 'w' ;
                         }
                     });
                 }
