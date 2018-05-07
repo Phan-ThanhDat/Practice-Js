@@ -106,8 +106,12 @@
             validateFormWorker.init();
             dataTableWorker.init();
             validateFormWorker.onSubmitSuccess(function (data) {
-                form.addEventListener('submit',dataTableWorker.add(data));
+                dataTableWorker.add(data);
             });
+
+            dataTableWorker.checkEditForm(function (data) {
+                validateFormWorker.validateEditForm(data);
+            })
             // validateFormWorker.check&SubmitEdit(function (data) {
             //     display.addEventListener('click', dataTableWorker.clickIconEdit(data));
             // })
@@ -145,7 +149,7 @@
 
     validateFormWorker = (function () {
 
-        var form = document.getElementById('form-worker');
+        let form = document.getElementById('form-worker');
         var btnSubmit = form.querySelector('button[type="submit"]');
         var inputs = form.querySelectorAll('input');
         let table = document.querySelector('.table');
@@ -193,6 +197,9 @@
             return uuid;
         }
 
+        function validateEditForm(input) {
+            validateInput(input);
+        }
         function validateInput(input) {
             switch (input) {
                 case 'fname':
@@ -204,8 +211,6 @@
                     }
                     break;
                 case 'email':
-
-                    // sasasa
                     inputStates.email.valid = Boolean(inputStates.email.value);
                     if (!inputStates.email.valid) {
                         inputStates.email.errMessage = 'Not empty';
@@ -213,6 +218,7 @@
                     else if (!validateEmail(inputStates.email.value)) {
                         inputStates.email.errMessage = 'Email wrong';
                         inputStates.email.valid = false;
+                        //alert('wrong')
                     }
                     else {
                         inputStates.email.errMessage = '';
@@ -286,7 +292,6 @@
             if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
                 return (true)
             }
-            //alert("You have entered an invalid email address!")
             return (false)
         }
 
@@ -371,7 +376,8 @@
         return {
             init: init,
             unLoad: unLoad,
-            onSubmitSuccess: onSubmitSuccess
+            onSubmitSuccess: onSubmitSuccess,
+            validateEditForm: validateEditForm,
         }
 
     })();
@@ -381,7 +387,7 @@
         let display = table.querySelector('tbody');
          var arraySave = localStorage.getItem('list');
          arraySave = JSON.parse(arraySave) || [];
-        let checkValid;
+        let checkEditFormFn;
         // var isEditUid;
         let inputStates = {
             uid : '',
@@ -575,8 +581,13 @@ ${item.tel.value}
             inputsEdit.forEach(function (inputt) {
                 inputt.addEventListener('input', function (e) {
                     inputStates[e.target.name].value = e.target.value;
+                    inputStates[e.target.name].valid = Boolean(e.target.value);
+                    //console.log(inputStates[e.target.name])
+                    checkEditFormFn(e.target.name);
                 });
+
             });
+            console.log(inputsEdit)
             let inputsCover = checkContaintag.querySelector('.list__edit-save');
             let btnSave = inputsCover.querySelector('.btn--save');
             btnSave.addEventListener('click', saveEventEdit);
@@ -592,20 +603,24 @@ ${item.tel.value}
                 }
             });
 
-            let formWorker = document.getElementById('form-worker');
-            formWorker.style.display = 'none';
+            let formEdit = document.querySelector('.list__edit-save');
+            formEdit.style.display = 'none';
             e.preventDefault();
             save2LocalStorageNewList();
             displayVar();
-            formWorker.style.display = 'flex';
-            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
-            let inputsCover = checkContaintag.querySelector('.list__edit-save');
-            inputsCover.style.display = 'none';
+            let formAdd = document.querySelector('.list__input-btn');
+            formAdd.style.display = 'block';
+           //let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+            // let inputsCover = checkContaintag.querySelector('.list__edit-save');
+            // inputsCover.style.display = 'none';
         }
 
         function clickIconEdit(e) {
+
             let checkHasClass = e.target.parentElement;
             if (checkHasClass.classList.contains('fa-pencil-alt')){
+                let formAdd = document.querySelector('.list__input-btn');
+                formAdd.style.display = 'none';
                 let editButton = e.target;
                 let postOfEditButton = editButton.parentElement.parentElement.parentElement.parentElement;
                 postOfEditButton.style.display = 'none';
@@ -715,6 +730,9 @@ ${item.tel.value}
         }
         //
         //
+        function checkEditForm(fn) {
+            checkEditFormFn = fn;
+        }
         function savetoLocalStorage(data) {
             let arraySaveString = [];
             let list = 'list';
@@ -762,6 +780,7 @@ ${item.tel.value}
             //renderAll : renderAll,
             init: init,
             add: add,
+            checkEditForm: checkEditForm,
         }
 
     })();

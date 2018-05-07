@@ -509,7 +509,7 @@ ${item.tel.value}
 
                     let contentInput = document.querySelector('.list__edit-save');
                     let inputs = contentInput.querySelectorAll('input');
-                    alert ('click save icon')
+
                     arraySave.forEach(function (item) {
                         if(item.uid === postOfEditButton.dataset.uid){
                             inputStates['uid'] = item.uid;
@@ -525,9 +525,6 @@ ${item.tel.value}
 
         function afterClickBtnEditSave() {
             let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
-            alert (checkContaintag.classList.contains('list__edit-save'))
-
-
                 let contentInput = document.querySelector('.list__edit-save');
                 let inputsEdit = contentInput.querySelectorAll('input');
                 inputsEdit.forEach(function (inputt) {
@@ -535,7 +532,7 @@ ${item.tel.value}
                         inputStates[e.target.name].value = e.target.value;
                     });
                 });
-                alert ('check contain list')
+
                 let inputsCover = checkContaintag.querySelector('.list__edit-save');
                 let btnSave = inputsCover.querySelector('.btn--save');
                 btnSave.addEventListener('click', saveEventEdit);
@@ -543,22 +540,18 @@ ${item.tel.value}
         }
 
         function saveEventEdit(e) {
-            alert(inputStates.uid)
             arraySave.forEach(function (item) {
                 if(item.uid === inputStates.uid) {
                     let index = arraySave.indexOf(item);
                     arraySave.splice(index, 1, inputStates);
                     //arraySave[index] = inputStates;
-                    alert(arraySave[index].fname.value)
                 }
             });
 
             let formWorker = document.getElementById('form-worker');
             formWorker.style.display = 'none';
             e.preventDefault();
-            alert('check prevent')
             save2LocalStorageNewList();
-            alert('save event edit')
             displayVar();
             formWorker.style.display = 'flex';
             let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
