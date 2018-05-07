@@ -100,11 +100,17 @@
 
         function init() {
             let form = document.getElementById('form-worker');
+            let table = document.querySelector('.table');
+            let display = table.querySelector('tbody');
+
             validateFormWorker.init();
             dataTableWorker.init();
             validateFormWorker.onSubmitSuccess(function (data) {
                 form.addEventListener('submit',dataTableWorker.add(data));
-            })
+            });
+            // validateFormWorker.check&SubmitEdit(function (data) {
+            //     display.addEventListener('click', dataTableWorker.clickIconEdit(data));
+            // })
         }
 
 
@@ -138,7 +144,6 @@
 
 
     validateFormWorker = (function () {
-        let arraySave = [];
 
         var form = document.getElementById('form-worker');
         var btnSubmit = form.querySelector('button[type="submit"]');
@@ -372,17 +377,36 @@
     })();
 
     dataTableWorker = (function () {
-
+        let table = document.querySelector('.table');
+        let display = table.querySelector('tbody');
          var arraySave = localStorage.getItem('list');
          arraySave = JSON.parse(arraySave) || [];
-
+        let checkValid;
         // var isEditUid;
-        // var editRowStates = {
-        //     fname: '',
-        //     //...
-        // }
-        //
+        let inputStates = {
+            uid : '',
+            fname: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            },
+            email: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            },
+            tel: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            }
+
+        };
+
         function init() {
+            displayVar();
+            display.addEventListener('click',deleteRow);
+            display.addEventListener('click', clickIconEdit);
             // loadData();
             // renderAll();
         }
@@ -453,6 +477,178 @@
         //     // remove => xoa event uid => xoa table
         // }
         //
+
+        function save2LocalStorageNewList() {
+            if(typeof (Storage) !=='undefined'){
+                arraySave = JSON.stringify(arraySave);
+                localStorage['list'] = arraySave;
+            }
+
+        }
+        function displayVar() {
+            arraySave = localStorage.getItem('list');
+            arraySave = JSON.parse(arraySave);
+//             arraySave.forEach(function (item) {
+//                 document.getElementById('display').insertAdjacentHTML('afterbegin', `
+// <h2> Title </h2>
+//     <p>${item.title.value} </p>
+// <h3> Content </h3>
+//     <p> ${item.content.value} </p>
+// __________________`);
+//             });
+
+            let listRemove = display;
+
+            while(listRemove.hasChildNodes()) {
+                listRemove.removeChild(listRemove.firstChild);
+            }
+
+            arraySave.forEach(function (item) {
+                display.insertAdjacentHTML('afterbegin', `
+
+<tr class="posts" data-uid="${item.uid}">
+
+<td class="post">
+<p class="info__text info__text--name">
+${item.fname.value}
+</p>
+</td>
+
+<td class="post">
+<p class="info__text info__text--mail">
+${item.email.value}
+</p>
+</td>
+
+<td class="post">
+<p class="info__text info__text--tel">
+${item.tel.value}
+</p>
+</td>
+
+<td>
+<div class="list__cover-icons">
+<i class="fas fa-pencil-alt info__icon"></i>
+<i class="fas fa-trash info__icon"></i>
+</div>
+</td>
+
+</tr>
+
+
+`);
+
+            });
+        }
+        function deleteRow(e) {
+            let checkHasClass = e.target.parentElement;
+            if (checkHasClass.classList.contains('fa-trash')){
+                removeButton = e.target;
+                postOfRemoveButton = removeButton.parentElement.parentElement.parentElement.parentElement;
+                console.log(postOfRemoveButton);
+
+
+                arraySave = localStorage.getItem('list');
+                arraySave = JSON.parse(arraySave);
+
+                console.log(arraySave);
+
+                arraySave.forEach(function (item) {
+                    if(item.uid === postOfRemoveButton.dataset.uid){
+                        let index = arraySave.indexOf(item);
+
+                        arraySave.splice(index, 1);
+
+                        save2LocalStorageNewList();
+                        displayVar();
+                    }
+                });
+            }
+
+        }
+
+        function afterClickBtnEditSave() {
+            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+
+            let contentInput = document.querySelector('.list__edit-save');
+            let inputsEdit = contentInput.querySelectorAll('input');
+            inputsEdit.forEach(function (inputt) {
+                inputt.addEventListener('input', function (e) {
+                    inputStates[e.target.name].value = e.target.value;
+                });
+            });
+            let inputsCover = checkContaintag.querySelector('.list__edit-save');
+            let btnSave = inputsCover.querySelector('.btn--save');
+            btnSave.addEventListener('click', saveEventEdit);
+
+        }
+
+        function saveEventEdit(e) {
+            arraySave.forEach(function (item) {
+                if(item.uid === inputStates.uid) {
+                    let index = arraySave.indexOf(item);
+                    arraySave.splice(index, 1, inputStates);
+                    //arraySave[index] = inputStates;
+                }
+            });
+
+            let formWorker = document.getElementById('form-worker');
+            formWorker.style.display = 'none';
+            e.preventDefault();
+            save2LocalStorageNewList();
+            displayVar();
+            formWorker.style.display = 'flex';
+            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+            let inputsCover = checkContaintag.querySelector('.list__edit-save');
+            inputsCover.style.display = 'none';
+        }
+
+        function clickIconEdit(e) {
+            let checkHasClass = e.target.parentElement;
+            if (checkHasClass.classList.contains('fa-pencil-alt')){
+                let editButton = e.target;
+                let postOfEditButton = editButton.parentElement.parentElement.parentElement.parentElement;
+                postOfEditButton.style.display = 'none';
+
+                let tableParticipants = document.querySelector('.table');
+                tableParticipants.insertAdjacentHTML('afterend', `
+
+<div class="list__row list__row--infos">
+                    <form class="content-input list__edit-save">
+                        <div class="inputs">
+                            <input type="text" name="fname" class="input__editing" value="George Clooney">
+                            <input type="email" name="email" class="input__editing input__editing--mail"
+                                   value="george.clooney@hollywood.com">
+                            <input type="tel" name="tel" class="input__editing" value="0504629898">
+                        </div>
+
+                        <button class="btn btn--cancel" type="reset">Cancel</button>
+                        <button class="btn btn--save" type="submit">Save</button>
+
+                    </form>
+                </div>
+`);
+
+                if (document.querySelector('.list__edit-save')){
+                    arraySave = localStorage.getItem('list');
+                    arraySave = JSON.parse(arraySave) || [];
+
+                    let contentInput = document.querySelector('.list__edit-save');
+                    let inputs = contentInput.querySelectorAll('input');
+                    arraySave.forEach(function (item) {
+                        if(item.uid === postOfEditButton.dataset.uid){
+                            inputStates['uid'] = item.uid;
+                            contentInput.querySelectorAll('input')[0].value = '';
+                            contentInput.querySelectorAll('input')[1].value = '';
+                            contentInput.querySelectorAll('input')[2].value = '' ;
+                        }
+                    });
+                }
+                afterClickBtnEditSave();
+            }
+        }
+
+
         function renderAll () {
             // renderRow(uid, action);
             //removeEvent();
@@ -550,6 +746,7 @@ ${item.tel.value}
             }
 
         }
+
         function add(data) {
             // set data moi => push
             // tap uid moi => set vao list {uid: data, uidx/...}
