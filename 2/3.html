@@ -99,11 +99,22 @@
     workersModule = (function () {
 
         function init() {
+            let form = document.getElementById('form-worker');
+            let table = document.querySelector('.table');
+            let display = table.querySelector('tbody');
+
             validateFormWorker.init();
             dataTableWorker.init();
             validateFormWorker.onSubmitSuccess(function (data) {
                 dataTableWorker.add(data);
+            });
+
+            dataTableWorker.checkEditForm(function (data) {
+                validateFormWorker.validateEditForm(data);
             })
+            // validateFormWorker.check&SubmitEdit(function (data) {
+            //     display.addEventListener('click', dataTableWorker.clickIconEdit(data));
+            // })
         }
 
 
@@ -137,9 +148,8 @@
 
 
     validateFormWorker = (function () {
-        let arraySave = [];
 
-        var form = document.getElementById('form-worker');
+        let form = document.getElementById('form-worker');
         var btnSubmit = form.querySelector('button[type="submit"]');
         var inputs = form.querySelectorAll('input');
         let table = document.querySelector('.table');
@@ -187,7 +197,11 @@
             return uuid;
         }
 
+        function validateEditForm(input) {
+            validateInput(input);
+        }
         function validateInput(input) {
+            console.log(inputStates)
             switch (input) {
                 case 'fname':
                     inputStates.fname.valid = Boolean(inputStates.fname.value);
@@ -198,8 +212,6 @@
                     }
                     break;
                 case 'email':
-
-                    // sasasa
                     inputStates.email.valid = Boolean(inputStates.email.value);
                     if (!inputStates.email.valid) {
                         inputStates.email.errMessage = 'Not empty';
@@ -207,6 +219,7 @@
                     else if (!validateEmail(inputStates.email.value)) {
                         inputStates.email.errMessage = 'Email wrong';
                         inputStates.email.valid = false;
+                        //alert('wrong')
                     }
                     else {
                         inputStates.email.errMessage = '';
@@ -231,6 +244,115 @@
 
         }
 
+        //render input if it is wrong
+        function renderInput(input) {
+            var inputSelector = form.querySelector(`input[name="${input}"]`);
+
+            if (!inputStates[input].valid) {
+                inputSelector.classList.add('input--error');
+                let errorBox = inputSelector.parentElement.querySelector('.input__error');
+                if(!errorBox) {
+                    inputSelector.insertAdjacentHTML('afterend', `
+                    <div class="input__error">${inputStates[input].errMessage}</div>
+               `)
+                } else {
+                    errorBox.innerHTML = inputStates.email.errMessage;
+                }
+
+            } else if (inputSelector.classList.contains('input--error')) {
+                inputSelector.classList.remove('input--error');
+                inputSelector.parentElement.querySelector('.input__error').remove();
+            }
+
+            checkFormCanBeSubmit1();
+
+        }
+
+
+        function checkFormCanBeSubmit1() {
+
+            var isReady = true;
+            inputStates.fname.valid = Boolean(inputStates.fname.value);
+            inputStates.email.valid = Boolean(inputStates.email.value);
+            inputStates.tel.valid = Boolean(inputStates.tel.value);
+
+            if (!inputStates.tel.valid || !inputStates.email.valid || !inputStates.fname.valid){
+                isReady = false;
+            }
+
+            if(!isReady) {
+                btnSubmit.disabled = true;
+                btnSubmit.style.color = 'white'
+            } else if(isReady) {
+                btnSubmit.disabled = false;
+                btnSubmit.style.color = 'red'
+            }
+        }
+
+        function validateEmail(mail) {
+            if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+                return (true)
+            }
+            return (false)
+        }
+
+        let isPhoneNumber = input => {
+
+            try {
+                let ISD_CODES = [93, 355, 213, 1684, 376, 244, 1264, 672, 1268, 54, 374, 297, 61, 43, 994, 1242, 973, 880, 1246, 375, 32, 501, 229, 1441, 975, 591, 387, 267, 55, 246, 1284, 673, 359, 226, 257, 855, 237, 1, 238, 1345, 236, 235, 56, 86, 61, 61, 57, 269, 682, 506, 385, 53, 599, 357, 420, 243, 45, 253, 1767, 1809, 1829, 1849, 670, 593, 20, 503, 240, 291, 372, 251, 500, 298, 679, 358, 33, 689, 241, 220, 995, 49, 233, 350, 30, 299, 1473, 1671, 502, 441481, 224, 245, 592, 509, 504, 852, 36, 354, 91, 62, 98, 964, 353, 441624, 972, 39, 225, 1876, 81, 441534, 962, 7, 254, 686, 383, 965, 996, 856, 371, 961, 266, 231, 218, 423, 370, 352, 853, 389, 261, 265, 60, 960, 223, 356, 692, 222, 230, 262, 52, 691, 373, 377, 976, 382, 1664, 212, 258, 95, 264, 674, 977, 31, 599, 687, 64, 505, 227, 234, 683, 850, 1670, 47, 968, 92, 680, 970, 507, 675, 595, 51, 63, 64, 48, 351, 1787, 1939, 974, 242, 262, 40, 7, 250, 590, 290, 1869, 1758, 590, 508, 1784, 685, 378, 239, 966, 221, 381, 248, 232, 65, 1721, 421, 386, 677, 252, 27, 82, 211, 34, 94, 249, 597, 47, 268, 46, 41, 963, 886, 992, 255, 66, 228, 690, 676, 1868, 216, 90, 993, 1649, 688, 1340, 256, 380, 971, 44, 1, 598, 998, 678, 379, 58, 84, 681, 212, 967, 260, 263],
+                    //extract numbers from string
+                    thenum = input.match(/[0-9]/).join(""),
+                    totalnums = thenum.length,
+                    last10Digits = parseInt(thenum) % 10000000000,
+                    ISDcode = thenum.substring(0, totalnums - 10);
+
+                //phone numbers are generally of 8 to 16 digits
+                if (totalnums >= 8 && totalnums <= 16) {
+                    if (ISDcode) {
+                        if (ISD_CODES.includes(parseInt(ISDcode))) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return true;
+                    }
+                }
+            } catch (e) {}
+
+            return false;
+        }
+
+
+        function init() {
+            btnSubmit.disabled = true;
+
+            inputs.forEach(function (inputt) {
+                inputt.addEventListener('input', inputChange)
+            });
+            form.addEventListener('submit',renderSubmit);
+
+        }
+
+        function unLoad() {
+            inputs.forEach(function (input) {
+                input.removeEventListener('input', inputChange)
+            });
+            form.removeEventListener('submit',renderSubmit);
+            display.removeEventListener('click', editList);
+            display.removeEventListener('click',removeList);
+        }
+
+        function renderSubmit(e) {
+            e.preventDefault();
+
+            if(onSubmitSuccessCb) {
+                onSubmitSuccessCb(inputStates);
+                resetForm();
+            }
+
+            //onSubmitSuccessCb(arraySave)
+        }
         function resetForm() {
             let fname1 = form.getElementsByClassName('input')[0];
             let fname2 = fname1.querySelector(`input[name="fname"]`).value ='';
@@ -248,37 +370,133 @@
             btnSubmit.style.color = 'white'
         }
 
-
-        function save2Localstorage() {
-            let arraySaveString = [];
-            let list = 'list';
-            //inputStates.uid = new Date().getUTCMilliseconds();
-
-
-            inputStates.fname.valid = Boolean(inputStates.fname.value);
-            inputStates.email.valid = Boolean(inputStates.email.value);
-            inputStates.tel.valid = Boolean(inputStates.tel.value);
-            if(typeof (Storage) !=='undefined'){
-                if (inputStates.fname.valid && inputStates.email.valid && inputStates.tel.valid) {
-                    if(!localStorage.getItem(list)){
-                        arraySave.push(inputStates);
-                        arraySaveString = JSON.stringify(arraySave);
-                        localStorage.setItem(list,arraySaveString);
-                        localStorage[list] = arraySaveString;
-                    }
-                    else {
-                        //get
-                        arraySaveString =  localStorage.getItem(list);
-                        arraySaveString = JSON.parse(arraySaveString);
-                        //push
-                        arraySaveString.push(inputStates);
-                        //save to
-                        arraySaveString = JSON.stringify(arraySaveString);
-                        localStorage[list] = arraySaveString;
-                    }
-                }
-            }
+        function onSubmitSuccess(cb) {
+            onSubmitSuccessCb = cb
         }
+
+        return {
+            init: init,
+            unLoad: unLoad,
+            onSubmitSuccess: onSubmitSuccess,
+            validateEditForm: validateEditForm,
+        }
+
+    })();
+
+    dataTableWorker = (function () {
+        let table = document.querySelector('.table');
+        let display = table.querySelector('tbody');
+        let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+        let inputsCover = checkContaintag.querySelector('.list__edit-save');
+        let btnSave = inputsCover.querySelector('.btn--save');
+        let btnCancel = inputsCover.querySelector('.btn--cancel');
+        let contentInput = document.querySelector('.list__edit-save');
+        let inputsEdit = contentInput.querySelectorAll('input');
+        var arraySave = [];
+
+        let checkEditFormFn;
+        var isEditUid;
+        let inputStates = {
+            uid : '',
+            fname: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            },
+            email: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            },
+            tel: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            }
+
+        };
+
+        function init() {
+            displayVar();
+            display.addEventListener('click',deleteRow);
+            display.addEventListener('click', clickIconEdit);
+            // loadData();
+            // renderAll();
+        }
+        //
+        //
+         function loadData() {
+        //      fetch
+        // arraySave = data;
+                arraySave = localStorage.getItem('list');
+                arraySave = JSON.parse(arraySave) || [];
+         }
+        //
+         function syncData() {
+                arraySave = JSON.stringify(arraySave);
+                localStorage['list'] = arraySave;
+         }
+        //
+        function removeEvent(uid) {
+            if(uid) {
+
+                // tim   nut edit uid=> remove event and callback editRow
+                // tim  nut xoa uid=> remove event and callback deleteRow
+            }
+            else {
+                // tim toan bo nut edit => remove event and callback editRow
+                // tim toan bo nut xoa => remove event and callback deleteRow
+                // tim toan bo nut save and cancel => remove event callback saveEdit and cancelEdit
+            }
+
+        }
+        //
+        function setEvent(uid) {
+            if(uid) {
+
+            } else {
+                // tim toan bo nut edit => set event and callback editRow
+                // tim toan bo nut x oa => set event and callback deleteRow
+            }
+
+        }
+        //
+        function editRow() {
+        //      set state isEditUid = uid
+        //     // render => 3 input => validate => setEvent
+        //     //
+        //     // set event cho 2 cai nut save va cancel => khi dung edit phai xoa event 2 nut save and delete
+                //isEditUid =
+
+        }
+        //
+        function saveEdit() {
+            // doc isEditUid
+            // doc editRowStates
+            // set states cho list
+            syncData();
+            renderAll();
+            // renderAll(uid, 'edit');
+        }
+        //
+        function cancelEdit() {
+            isEditUid = null;
+            renderAll();
+        }
+        //
+        function deleteRow() {
+            // Xoa data no list
+            // Sync data
+            syncData();
+            renderAll();
+        }
+        //
+        //
+        // function renderRow(uid, action) {
+        //     // add = > [ush row => set evbent uid
+        //     // remove => xoa event uid => xoa table
+        // }
+        //
 
         function save2LocalStorageNewList() {
             if(typeof (Storage) !=='undefined'){
@@ -342,98 +560,7 @@ ${item.tel.value}
 
             });
         }
-        function renderSubmit(e) {
-            e.preventDefault();
-            save2Localstorage();
-            displayVar();
-            resetForm();
-            if(onSubmitSuccessCb) {
-                //onSubmitSuccessCb(data)
-            }
-
-            // onSubmitSuccessCb(data)
-        }
-
-        function renderInput(input) {
-            var inputSelector = form.querySelector(`input[name="${input}"]`);
-
-            if (!inputStates[input].valid) {
-                inputSelector.classList.add('input--error');
-                let errorBox = inputSelector.parentElement.querySelector('.input__error');
-                if(!errorBox) {
-                    inputSelector.insertAdjacentHTML('afterend', `
-                    <div class="input__error">${inputStates[input].errMessage}</div>
-               `)
-                } else {
-                    errorBox.innerHTML = inputStates.email.errMessage;
-                }
-
-            } else if (inputSelector.classList.contains('input--error')) {
-                inputSelector.classList.remove('input--error');
-                inputSelector.parentElement.querySelector('.input__error').remove();
-            }
-
-            checkFormCanBeSubmit1();
-
-        }
-
-
-        function checkFormCanBeSubmit1() {
-
-            var isReady = true;
-            inputStates.fname.valid = Boolean(inputStates.fname.value);
-            inputStates.email.valid = Boolean(inputStates.email.value);
-            inputStates.tel.valid = Boolean(inputStates.tel.value);
-
-            if (!inputStates.tel.valid || !inputStates.email.valid || !inputStates.fname.valid){
-                isReady = false;
-            }
-
-            if(!isReady) {
-                btnSubmit.disabled = true;
-                btnSubmit.style.color = 'white'
-            } else if(isReady) {
-                btnSubmit.disabled = false;
-                btnSubmit.style.color = 'red'
-            }
-        }
-
-        function validateEmail(mail) {
-            if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
-                return (true)
-            }
-            //alert("You have entered an invalid email address!")
-            return (false)
-        }
-
-        let isPhoneNumber = input => {
-
-            try {
-                let ISD_CODES = [93, 355, 213, 1684, 376, 244, 1264, 672, 1268, 54, 374, 297, 61, 43, 994, 1242, 973, 880, 1246, 375, 32, 501, 229, 1441, 975, 591, 387, 267, 55, 246, 1284, 673, 359, 226, 257, 855, 237, 1, 238, 1345, 236, 235, 56, 86, 61, 61, 57, 269, 682, 506, 385, 53, 599, 357, 420, 243, 45, 253, 1767, 1809, 1829, 1849, 670, 593, 20, 503, 240, 291, 372, 251, 500, 298, 679, 358, 33, 689, 241, 220, 995, 49, 233, 350, 30, 299, 1473, 1671, 502, 441481, 224, 245, 592, 509, 504, 852, 36, 354, 91, 62, 98, 964, 353, 441624, 972, 39, 225, 1876, 81, 441534, 962, 7, 254, 686, 383, 965, 996, 856, 371, 961, 266, 231, 218, 423, 370, 352, 853, 389, 261, 265, 60, 960, 223, 356, 692, 222, 230, 262, 52, 691, 373, 377, 976, 382, 1664, 212, 258, 95, 264, 674, 977, 31, 599, 687, 64, 505, 227, 234, 683, 850, 1670, 47, 968, 92, 680, 970, 507, 675, 595, 51, 63, 64, 48, 351, 1787, 1939, 974, 242, 262, 40, 7, 250, 590, 290, 1869, 1758, 590, 508, 1784, 685, 378, 239, 966, 221, 381, 248, 232, 65, 1721, 421, 386, 677, 252, 27, 82, 211, 34, 94, 249, 597, 47, 268, 46, 41, 963, 886, 992, 255, 66, 228, 690, 676, 1868, 216, 90, 993, 1649, 688, 1340, 256, 380, 971, 44, 1, 598, 998, 678, 379, 58, 84, 681, 212, 967, 260, 263],
-                    //extract numbers from string
-                    thenum = input.match(/[0-9]/).join(""),
-                    totalnums = thenum.length,
-                    last10Digits = parseInt(thenum) % 10000000000,
-                    ISDcode = thenum.substring(0, totalnums - 10);
-
-                //phone numbers are generally of 8 to 16 digits
-                if (totalnums >= 8 && totalnums <= 16) {
-                    if (ISDcode) {
-                        if (ISD_CODES.includes(parseInt(ISDcode))) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } else {
-                        return true;
-                    }
-                }
-            } catch (e) {}
-
-            return false;
-        }
-
-        function removeList(e) {
+        function deleteRow(e) {
             let checkHasClass = e.target.parentElement;
             if (checkHasClass.classList.contains('fa-trash')){
                 removeButton = e.target;
@@ -460,9 +587,63 @@ ${item.tel.value}
 
         }
 
-        function editList(e) {
+        function afterClickBtnEditSave() {
+            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+
+            let contentInput = document.querySelector('.list__edit-save');
+            let inputsEdit = contentInput.querySelectorAll('input');
+            inputsEdit.forEach(function (inputt) {
+                inputt.addEventListener('input', function (e) {
+                    inputStates[e.target.name].value = e.target.value;
+                    inputStates[e.target.name].valid = Boolean(e.target.value);
+                    //console.log(inputStates[e.target.name])
+                    checkEditFormFn(e.target.name);
+                });
+
+            });
+            console.log(inputsEdit)
+            let inputsCover = checkContaintag.querySelector('.list__edit-save');
+            let btnSave = inputsCover.querySelector('.btn--save');
+            let btnCancel = inputsCover.querySelector('.btn--cancel');
+            btnSave.addEventListener('click', saveEventEdit);
+            btnCancel.addEventListener('click',cancelEdit);
+        }
+        function cancelEdit(e) {
+            e.preventDefault();
+            let formEdit = document.querySelector('.list__edit-save');
+            formEdit.style.display = 'none';
+            displayVar();
+            let formAdd = document.querySelector('.list__input-btn');
+            formAdd.style.display = 'block';
+        }
+
+        function saveEventEdit(e) {
+            arraySave.forEach(function (item) {
+                if(item.uid === inputStates.uid) {
+                    let index = arraySave.indexOf(item);
+                    arraySave.splice(index, 1, inputStates);
+                    //arraySave[index] = inputStates;
+                }
+            });
+
+            let formEdit = document.querySelector('.list__edit-save');
+            formEdit.style.display = 'none';
+            e.preventDefault();
+            save2LocalStorageNewList();
+            displayVar();
+            let formAdd = document.querySelector('.list__input-btn');
+            formAdd.style.display = 'block';
+            //let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
+            // let inputsCover = checkContaintag.querySelector('.list__edit-save');
+            // inputsCover.style.display = 'none';
+        }
+
+        function clickIconEdit(e) {
+
             let checkHasClass = e.target.parentElement;
             if (checkHasClass.classList.contains('fa-pencil-alt')){
+                let formAdd = document.querySelector('.list__input-btn');
+                formAdd.style.display = 'none';
                 let editButton = e.target;
                 let postOfEditButton = editButton.parentElement.parentElement.parentElement.parentElement;
                 postOfEditButton.style.display = 'none';
@@ -473,10 +654,10 @@ ${item.tel.value}
 <div class="list__row list__row--infos">
                     <form class="content-input list__edit-save">
                         <div class="inputs">
-                            <input type="text" name="fname" class="input__editing" value="">
+                            <input type="text" name="fname" class="input__editing" value="George Clooney">
                             <input type="email" name="email" class="input__editing input__editing--mail"
-                                   value="">
-                            <input type="tel" name="tel" class="input__editing" value="">
+                                   value="george.clooney@hollywood.com">
+                            <input type="tel" name="tel" class="input__editing" value="0504629898">
                         </div>
 
                         <button class="btn btn--cancel" type="reset">Cancel</button>
@@ -484,8 +665,6 @@ ${item.tel.value}
 
                     </form>
                 </div>
-
-
 `);
 
                 if (document.querySelector('.list__edit-save')){
@@ -496,203 +675,133 @@ ${item.tel.value}
                     let inputs = contentInput.querySelectorAll('input');
                     arraySave.forEach(function (item) {
                         if(item.uid === postOfEditButton.dataset.uid){
-                            let index = arraySave.indexOf(item);
-
-                            contentInput.querySelectorAll('input')[0].value = '';
-                            contentInput.querySelectorAll('input')[1].value = '';
-                            contentInput.querySelectorAll('input')[2].value = '' ;
-
-                            //inputStates = item;
-                            console.log(inputStates);
-
-                            inputs.forEach(function (inputt) {
-                                inputt.addEventListener('input', function (e) {
-                                    inputStates['uid'] = item.uid;
-                                    console.log(e.target.name);
-                                    inputStates[e.target.name].value = e.target.value;
-                                });
-                            });
-                            console.log('checkingnnnnnnn')
-
-                            inputStates.fname.valid = Boolean(inputStates.fname.value);
-                            inputStates.email.valid = Boolean(inputStates.email.value);
-                            inputStates.tel.valid = Boolean(inputStates.tel.value);
-
-                            console.log(inputStates.fname.value)
-                            console.log(inputStates);
-
-                            console.log(arraySave[index]);
-
-                            arraySave.splice(index, 1,inputStates);
-                            // arraySave.splice(index, 0,inputStates);
-                            //arraySave[index] = inputStates;
-
-                            console.log(arraySave[index]);
-
-                            let form = document.querySelector('.list__edit-save');
-                            //save2LocalStorageNewList();
-                            console.log(arraySave);
-
-
-
-                            arraySave = JSON.stringify(arraySave) || '';
-                            console.log(arraySave);
-                            let demo = JSON.parse(arraySave)  || [];
-                            console.log(demo);
-
-
-                            form.addEventListener('submit',function (e) {
-                                e.preventDefault();
-                                save2LocalStorageNewList();
-                                displayVar();
-                            });
+                            inputStates['uid'] = item.uid;
+                            contentInput.querySelectorAll('input')[0].value = 'w';
+                            contentInput.querySelectorAll('input')[1].value = 'w';
+                            contentInput.querySelectorAll('input')[2].value = 'w' ;
                         }
                     });
                 }
+                afterClickBtnEditSave();
             }
         }
 
-        function init() {
-            btnSubmit.disabled = true;
-            arraySave = localStorage.getItem('list');
-            arraySave = JSON.parse(arraySave) || [];
-
-            if (arraySave.length > 0) {
-                displayVar();
-            }
-
-            inputs.forEach(function (inputt) {
-                inputt.addEventListener('input', inputChange)
-            });
-            form.addEventListener('submit',renderSubmit);
-            display.addEventListener('click', editList);
-            display.addEventListener('click',removeList);
-        }
-
-        function unLoad() {
-            inputs.forEach(function (input) {
-                input.removeEventListener('input', inputChange)
-            });
-            form.removeEventListener('submit',renderSubmit);
-            display.removeEventListener('click', editList);
-            display.removeEventListener('click',removeList);
-        }
-
-
-        function onSubmitSuccess(cb) {
-            onSubmitSuccessCb = cb
-        }
-
-        return {
-            init: init,
-            unLoad: unLoad,
-            onSubmitSuccess: onSubmitSuccess
-        }
-
-    })();
-
-    dataTableWorker = (function () {
-
-        var list;
-        var isEditUid;
-        var editRowStates = {
-            fname: '',
-            //...
-        }
-
-        function init() {
-            loadData();
-            renderAll();
-        }
-
-
-        function loadData() {
-
-        }
-
-        function syncData() {
-
-        }
-
-        function removeEvent(uid) {
-            if(uid) {
-                // tim   nut edit uid=> remove event and callback editRow
-                // tim  nut xoa uid=> remove event and callback deleteRow
-            }
-            else {
-                // tim toan bo nut edit => remove event and callback editRow
-                // tim toan bo nut xoa => remove event and callback deleteRow
-                // tim toan bo nut save and cancel => remove event callback saveEdit and cancelEdit
-            }
-
-        }
-
-        function setEvent(uid) {
-            if(uid) {
-
-            } else {
-
-            }
-            // tim toan bo nut edit => set event and callback editRow
-            // tim toan bo nut xoa => set event and callback deleteRow
-        }
-
-        function editRow() {
-            // set state isEditUid = uid
-            // render => 3 input => validate => setEvent
-            //
-            // set event cho 2 cai nut save va cancel => khi dung edit phai xoa event 2 nut save and delete
-        }
-
-        function saveEdit() {
-            // doc isEditUid
-            // doc editRowStates
-            // set states cho list
-            syncData();
-            renderAll();
-            // renderAll(uid, 'edit');
-        }
-
-        function cancelEdit() {
-            isEditUid = null;
-            renderAll();
-        }
-
-        function deleteRow() {
-            // Xoa data no list
-            // Sync data
-            syncData();
-            renderAll();
-        }
-
-
-        function renderRow(uid, action) {
-            // add = > [ush row => set evbent uid
-            // remove => xoa event uid => xoa table
-        }
 
         function renderAll () {
             // renderRow(uid, action);
-            removeEvent();
+            //removeEvent();
             //...
             // Doc list = > render
             // if uid row  === isEditUid => render 3 input
 
-            setEvent();
-        }
+            //setEvent();
+//             arraySave.forEach(function (item) {
+//                 document.getElementById('display').insertAdjacentHTML('afterbegin', `
+// <h2> Title </h2>
+//     <p>${item.title.value} </p>
+// <h3> Content </h3>
+//     <p> ${item.content.value} </p>
+// __________________`);
+//             });
 
+            let table = document.querySelector('.table');
+            let display = table.querySelector('tbody');
+            let listRemove = display;
+
+            while(listRemove.hasChildNodes()) {
+                listRemove.removeChild(listRemove.firstChild);
+            }
+
+            arraySave.forEach(function (item) {
+                display.insertAdjacentHTML('afterbegin', `
+
+<tr class="posts" data-uid="${item.uid}">
+
+<td class="post">
+<p class="info__text info__text--name">
+${item.fname.value}
+</p>
+</td>
+
+<td class="post">
+<p class="info__text info__text--mail">
+${item.email.value}
+</p>
+</td>
+
+<td class="post">
+<p class="info__text info__text--tel">
+${item.tel.value}
+</p>
+</td>
+
+<td>
+<div class="list__cover-icons">
+<i class="fas fa-pencil-alt info__icon"></i>
+<i class="fas fa-trash info__icon"></i>
+</div>
+</td>
+
+</tr>
+
+
+`);
+            });
+
+        }
+        //
+        //
+        function checkEditForm(fn) {
+            checkEditFormFn = fn;
+        }
+        function savetoLocalStorage(data) {
+            let arraySaveString = [];
+            let list = 'list';
+            //inputStates.uid = new Date().getUTCMilliseconds();
+
+
+            data.fname.valid = Boolean(data.fname.value);
+            data.email.valid = Boolean(data.email.value);
+            data.tel.valid = Boolean(data.tel.value);
+            if(typeof (Storage) !=='undefined'){
+                if (data.fname.valid && data.email.valid && data.tel.valid) {
+                    if(!localStorage.getItem(list)){
+                        arraySave.push(data);
+                        arraySaveString = JSON.stringify(arraySave);
+                        localStorage.setItem(list,arraySaveString);
+                        localStorage[list] = arraySaveString;
+                    }
+                    else {
+                        //get
+                        arraySaveString =  localStorage.getItem(list);
+                        arraySaveString = JSON.parse(arraySaveString);
+                        //push
+                        arraySaveString.push(data);
+                        //save to
+                        arraySaveString = JSON.stringify(arraySaveString);
+                        localStorage[list] = arraySaveString;
+                    }
+                }
+            }
+
+        }
 
         function add(data) {
             // set data moi => push
             // tap uid moi => set vao list {uid: data, uidx/...}
-            syncData();
+
+            savetoLocalStorage(data);
+
+            //syncData();
+
             renderAll();
         }
 
         return {
-            renderAll : renderAll,
+            //renderAll : renderAll,
             init: init,
             add: add,
+            checkEditForm: checkEditForm,
         }
 
     })();
