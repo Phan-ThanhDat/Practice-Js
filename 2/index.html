@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <button class="btn btn--add" type="submit">Add new</button>
-                        <button class="btn btn--add" type="reset">Reset</button>
+                        <button class="btn btn--reset" type="reset">Reset</button>
                     </form>
                 </div>
             </div>
@@ -78,6 +78,8 @@
           uid: data.uid,
         });
       });
+
+
 
       // dataTableWorker.checkEditForm(function (data) {
       //     validateFormWorker.validateEditForm(data);
@@ -413,7 +415,6 @@
         // tim toan bo nut xoa => remove event and callback deleteRow
         // tim toan bo nut save and cancel => remove event callback saveEdit and cancelEdit
       }
-
     }
 
     function setEvent(uid) {
@@ -429,11 +430,30 @@
       }
       // tim toan bo nut edit => set event and callback editRow
       // tim toan bo nut xoa => set event and callback deleteRow
+
     }
 
     function editRow(e) {
-      isEditUid = e.currentTarget.dataset.uid;
-      renderAll();
+        isEditUid = e.currentTarget.dataset.uid;
+        inputStates.uid = isEditUid;
+        renderAll();
+
+        let workerTable = document.querySelector('.table');
+        let inputs = workerTable.querySelectorAll('input')
+        inputs.forEach(function (inputt) {
+            inputt.addEventListener('input', (e) => {
+                inputStates[e.target.name].value = inputt.value;
+            })
+        });
+
+        inputs.forEach(function (inputt) {
+            inputStates[inputt.name].value = inputt.value;
+        });
+
+        let btnSave = workerTable.querySelector('.btn--save');
+        let btnCancel = workerTable.querySelector('.btn--cancel');
+        btnSave.addEventListener('click',saveEdit);
+        btnCancel.addEventListener('click',cancelEdit);
 
       //e.currentTarget vs e.target
       // set state isEditUid = uid
@@ -442,16 +462,35 @@
       // set event cho 2 cai nut save va cancel => khi dung edit phai xoa event 2 nut save and delete
     }
 
-    function saveEdit() {
+    function saveEdit(e) {
       // doc isEditUid
       // doc editRowStates
       // set states cho list
-      syncData();
-      renderAll();
-      // renderAll(uid, 'edit');
+        e.preventDefault();
+        modifyData({
+            fname: inputStates.fname.value,
+            email: inputStates.email.value,
+            tel: inputStates.tel.value,
+            uid: inputStates.uid,});
+
+        syncData();
+        isEditUid = null;
+        renderAll();
     }
 
-    function cancelEdit() {
+    let modifyData = (data) => {
+        listWorker.forEach(function (item) {
+            if (item.uid === data.uid) {
+                let index = listWorker.indexOf(item);
+                listWorker.splice(index, 1, data);
+
+                // renderAll(uid, 'edit');
+            }
+        });
+    }
+
+    function cancelEdit(e) {
+      e.preventDefault();
       isEditUid = null;
       renderAll();
     }
@@ -547,18 +586,18 @@
     function renderRowWorkerEdit(worker) {
       return `
         <td class="table-col">
-            <input data-rules="required" name="fname" type="text" class="input__adding" placeholder="Full name" value="${worker.fname}">
+            <input data-rules="required" name="fname" type="text" class="input__adding" placeholder="Full name" data-fname="${worker.fname}" value="${worker.fname}">
         </td>
         <td class="table-col">
-            <input data-rules="required" name="email" type="text" class="input__adding" placeholder="Email" value="${worker.email}">
+            <input data-rules="required" name="email" type="text" class="input__adding" placeholder="Email" data-email="${worker.email}" value="${worker.email}">
         </td>
         <td class="table-col">
-            <input data-rules="required" name="tel" type="text" class="input__adding" placeholder="Full name" value="${worker.tel}">
+            <input data-rules="required" name="tel" type="text" class="input__adding" placeholder="Full name" data-tel="${worker.tel}" value="${worker.tel}">
         </td>
         <td class="table-col">
             <div class="table-participants__actions">
-                <button class="btn btn--add" >Cancel</button>
-                <button class="btn btn--add" >Save</button>
+                <button class="btn btn--cancel" >Cancel</button>
+                <button class="btn btn--save" >Save</button>
             </div>
         </td>
       `

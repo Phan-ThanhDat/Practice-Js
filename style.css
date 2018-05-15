@@ -282,6 +282,14 @@ tbody tr {
     padding: 24px;
 }
 
+.table-participants__actions{
+    display: flex;
+}
+
+.worker-edit {
+    margin-right: 32px;
+}
+
 .content-input {
     padding: 16px;
     padding-bottom: 24px;

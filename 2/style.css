@@ -1,4 +1,12 @@
 /*COLOR*/
+.table-participants__actions{
+    display: flex;
+}
+
+.worker-edit {
+    margin-right: 32px;
+}
+
 .btn {
     background-color: #ededed;
     font-size: 16px;
