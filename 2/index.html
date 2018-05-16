@@ -495,7 +495,20 @@
       renderAll();
     }
 
-    function deleteRow() {
+    function deleteRow(e) {
+        e.preventDefault();
+        isEditUid = e.currentTarget.dataset.uid;
+        inputStates.uid = isEditUid;
+
+        listWorker.forEach(function (item) {
+            if (item.uid === inputStates.uid) {
+                let index = listWorker.indexOf(item);
+                listWorker.splice(index, 1);
+
+                // renderAll(uid, 'edit');
+            }
+        });
+
       // Xoa data no list
       // Sync data
       syncData();
