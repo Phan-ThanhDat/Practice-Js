@@ -20,8 +20,17 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/2/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
-              <caret line="501" column="8" lean-forward="true" selection-start-line="501" selection-start-column="8" selection-end-line="501" selection-end-column="8" />
+            <state relative-caret-position="18">
+              <caret line="438" column="10" selection-start-line="438" selection-start-column="10" selection-end-line="438" selection-end-column="10" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="3.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/2/3.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="14454">
+              <caret line="803" column="41" selection-start-line="803" selection-start-column="12" selection-end-line="803" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -29,8 +38,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9810">
-              <caret line="545" column="60" selection-start-line="542" selection-start-column="12" selection-end-line="545" selection-end-column="60" />
+            <state relative-caret-position="9738">
+              <caret line="541" column="35" lean-forward="true" selection-start-line="541" selection-start-column="35" selection-end-line="541" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -50,7 +59,6 @@
       <find>btn btn-</find>
       <find>form-worker</find>
       <find>fnam</find>
-      <find>input</find>
       <find>errorBox</find>
       <find>arraySave</find>
       <find>checkFormCanBeSubmit1</find>
@@ -66,8 +74,11 @@
       <find>form</find>
       <find>init</find>
       <find>add</find>
-      <find>onSubmitSuccess</find>
       <find>btn--add</find>
+      <find>add(</find>
+      <find>onSubmitSuccess</find>
+      <find>checkEditForm</find>
+      <find>input</find>
     </findStrings>
     <replaceStrings>
       <replace>//</replace>
@@ -128,10 +139,10 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="431" />
-    <option name="y" value="284" />
-    <option name="width" value="1357" />
-    <option name="height" value="806" />
+    <option name="x" value="305" />
+    <option name="y" value="318" />
+    <option name="width" value="1355" />
+    <option name="height" value="798" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -307,16 +318,17 @@
       <workItem from="1526302746711" duration="4661000" />
       <workItem from="1526334312826" duration="663000" />
       <workItem from="1526374966109" duration="18079000" />
-      <workItem from="1526467500239" duration="351000" />
+      <workItem from="1526467500239" duration="8136000" />
+      <workItem from="1526942483460" duration="45000" />
+      <workItem from="1527119200769" duration="248000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="404667000" />
+    <option name="totallyTimeSpent" value="412745000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-11" width="1857" height="1212" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11080786" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -325,7 +337,7 @@
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49945414" weight="0.4018868" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49945414" visible="true" weight="0.40170133" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.40453687" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -710,13 +722,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/2/3.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="526" column="42" selection-start-line="526" selection-start-column="24" selection-end-line="526" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/function_constructor.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -753,17 +758,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/2/3.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14454">
+          <caret line="803" column="41" selection-start-line="803" selection-start-column="12" selection-end-line="803" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9810">
-          <caret line="545" column="60" selection-start-line="542" selection-start-column="12" selection-end-line="545" selection-end-column="60" />
+        <state relative-caret-position="9738">
+          <caret line="541" column="35" lean-forward="true" selection-start-line="541" selection-start-column="35" selection-end-line="541" selection-end-column="35" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/2/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="501" column="8" lean-forward="true" selection-start-line="501" selection-start-column="8" selection-end-line="501" selection-end-column="8" />
+        <state relative-caret-position="18">
+          <caret line="438" column="10" selection-start-line="438" selection-start-column="10" selection-end-line="438" selection-end-column="10" />
         </state>
       </provider>
     </entry>

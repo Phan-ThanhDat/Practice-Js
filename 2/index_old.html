@@ -49,16 +49,14 @@
                                        placeholder="Phone number">
                             </div>
                         </div>
-                        <button class="btn btn--add" type="submit" disabled>Add new</button>
+                        <button class="btn btn--add" type="submit">Add new</button>
                         <button class="btn btn--reset" type="reset">Reset</button>
                     </form>
                 </div>
             </div>
-            <form id="form-table">
-                <div class="list__table">
+            <div class="list__table">
 
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -66,98 +64,25 @@
 
 <script>
 
-  function FormValidate(selector, options) {
-    this._selector = selector;
-    this._inputStates = {};
-    this._options = options;
-    this.init();
-  }
-
-  FormValidate.prototype = {
-    _checkCanSubmit: function () {
-      const keys = Object.keys(this._inputStates);
-      let canSubmit = true;
-      for(let i = 0; i < keys.length; i++) {
-        if(!this._inputStates[keys[i]].valid) {
-          canSubmit = false;
-          break;
-        }
-      }
-
-      this.submitBtn.disabled = !canSubmit;
-    },
-
-    _onChangeInput: function (e) {
-      this._inputStates[e.target.name].value = e.target.value;
-      this.validateField(e.target.name);
-      this._checkCanSubmit();
-    },
-
-    _renderError: function (name) {
-      const input = this.form.querySelector(`input[name="${name}"]`);
-      let errorBox = input.parentElement.querySelector('.input__error');
-
-      if(this._inputStates[name].valid) {
-        if(errorBox) {
-          errorBox.remove();
-        }
-      } else {
-        if(errorBox) {
-          errorBox.innerHTML = this._inputStates[name].errMessage
-        } else {
-          input.insertAdjacentHTML('afterend', `
-                    <div class="input__error">${this._inputStates[name].msg}</div>`)
-        }
-      }
-    },
-
-    validateField: function (name) {
-      if (this._inputStates[name].value) {
-        this._inputStates[name].valid = true;
-        this._inputStates[name].msg = '';
-      } else {
-        this._inputStates[name].valid = false;
-        this._inputStates[name].msg = 'This field is required';
-      }
-      this._renderError(name)
-    },
-
-    validateAll: function () {
-      Object.keys(this._inputStates).forEach((key) => {
-        this.validateField(key);
-      });
-      this._checkCanSubmit();
-    },
-
-    init: function () {
-      this.form = document.querySelector(this._selector);
-      this.submitBtn = this.form.querySelector('button[type="submit"]');
-      this.form.querySelectorAll('input').forEach((input) => {
-        this._inputStates[input.name] = {
-          value: input.value,
-          valid: null,
-          msg: null,
-          // rules: data-rules
-        };
-        input.addEventListener('input', this._onChangeInput.bind(this))
-      });
-    },
-  };//
-
   workersModule = (function () {
 
     function init() {
-      //validateFormWorker.init();
+      validateFormWorker.init();
       dataTableWorker.init();
-      const f = new FormValidate('#form-worker', {});
-//      validateFormWorker.onSubmitSuccess(function (data) {
-//        dataTableWorker.add({
-//          fname: data.fname.value,
-//          email: data.email.value,
-//          tel: data.tel.value,
-//          uid: data.uid,
-//        });
-//      });
+
+      validateFormWorker.onSubmitSuccess(function (data) {
+        dataTableWorker.add({
+          fname: data.fname.value,
+          email: data.email.value,
+          tel: data.tel.value,
+          uid: data.uid,
+        });
+      });
+
+      dataTableWorker.checkEditForm(function (data) {
+          validateFormWorker.validateEditForm(data);
+      })
+
 
 
       // dataTableWorker.checkEditForm(function (data) {
@@ -251,7 +176,6 @@
     }
 
     function validateInput(input) {
-      console.log(inputStates)
       switch (input) {
         case 'fname':
           inputStates.fname.valid = Boolean(inputStates.fname.value);
@@ -298,6 +222,7 @@
     function renderInput(input) {
       var inputSelector = form.querySelector(`input[name="${input}"]`);
 
+        console.log(inputStates)
       if (!inputStates[input].valid) {
         inputSelector.classList.add('input--error');
         let errorBox = inputSelector.parentElement.querySelector('.input__error');
@@ -326,6 +251,7 @@
       inputStates.email.valid = Boolean(inputStates.email.value);
       inputStates.tel.valid = Boolean(inputStates.tel.value);
 
+      //console.log(inputStates)
       if (!inputStates.tel.valid || !inputStates.email.valid || !inputStates.fname.valid) {
         isReady = false;
       }
@@ -439,6 +365,7 @@
     const root = document.querySelector('.list__table');
     var listWorker;
     var isEditUid;
+    let checkEditFormFn;
 
     let inputStates = {
       uid: '',
@@ -513,26 +440,27 @@
     }
 
     function editRow(e) {
-      isEditUid = e.currentTarget.dataset.uid;
-      inputStates.uid = isEditUid;
-      renderAll();
-      let workerTable = document.querySelector('.table');
-      let inputs = workerTable.querySelectorAll('input');
+        isEditUid = e.currentTarget.dataset.uid;
+        inputStates.uid = isEditUid;
+        renderAll();
 
-      inputs.forEach(function (inputt) {
-        inputt.addEventListener('input', (e) => {
-          inputStates[e.target.name].value = inputt.value;
-        })
-      });
+        let workerTable = document.querySelector('.table');
+        let inputs = workerTable.querySelectorAll('input')
+        inputs.forEach(function (inputt) {
+            inputt.addEventListener('input', (e) => {
+                inputStates[e.target.name].value = inputt.value;
+            })
+        });
 
-      inputs.forEach(function (inputt) {
-        inputStates[inputt.name].value = inputt.value;
-      });
+        inputs.forEach(function (inputt) {
+            inputStates[inputt.name].value = inputt.value;
 
-      let btnSave = workerTable.querySelector('.btn--save');
-      let btnCancel = workerTable.querySelector('.btn--cancel');
-      btnSave.addEventListener('click', saveEdit);
-      btnCancel.addEventListener('click', cancelEdit);
+        });
+
+        let btnSave = workerTable.querySelector('.btn--save');
+        let btnCancel = workerTable.querySelector('.btn--cancel');
+        btnSave.addEventListener('click',saveEdit);
+        btnCancel.addEventListener('click',cancelEdit);
 
       //e.currentTarget vs e.target
       // set state isEditUid = uid
@@ -545,28 +473,27 @@
       // doc isEditUid
       // doc editRowStates
       // set states cho list
-      e.preventDefault();
-      modifyData({
-        fname: inputStates.fname.value,
-        email: inputStates.email.value,
-        tel: inputStates.tel.value,
-        uid: inputStates.uid,
-      });
+        e.preventDefault();
+        modifyData({
+            fname: inputStates.fname.value,
+            email: inputStates.email.value,
+            tel: inputStates.tel.value,
+            uid: inputStates.uid,});
 
-      syncData();
-      isEditUid = null;
-      renderAll();
+        syncData();
+        isEditUid = null;
+        renderAll();
     }
 
     let modifyData = (data) => {
-      listWorker.forEach(function (item) {
-        if (item.uid === data.uid) {
-          let index = listWorker.indexOf(item);
-          listWorker.splice(index, 1, data);
+        listWorker.forEach(function (item) {
+            if (item.uid === data.uid) {
+                let index = listWorker.indexOf(item);
+                listWorker.splice(index, 1, data);
 
-          // renderAll(uid, 'edit');
-        }
-      });
+                // renderAll(uid, 'edit');
+            }
+        });
     }
 
     function cancelEdit(e) {
@@ -576,18 +503,18 @@
     }
 
     function deleteRow(e) {
-      e.preventDefault();
-      isEditUid = e.currentTarget.dataset.uid;
-      inputStates.uid = isEditUid;
+        e.preventDefault();
+        isEditUid = e.currentTarget.dataset.uid;
+        inputStates.uid = isEditUid;
 
-      listWorker.forEach(function (item) {
-        if (item.uid === inputStates.uid) {
-          let index = listWorker.indexOf(item);
-          listWorker.splice(index, 1);
+        listWorker.forEach(function (item) {
+            if (item.uid === inputStates.uid) {
+                let index = listWorker.indexOf(item);
+                listWorker.splice(index, 1);
 
-          // renderAll(uid, 'edit');
-        }
-      });
+                // renderAll(uid, 'edit');
+            }
+        });
 
       // Xoa data no list
       // Sync data
@@ -618,14 +545,13 @@
     }
 
     function renderAll() {
-      let haveEditingRow = false;
       removeEvent();
       while (root.firstChild) {
         root.removeChild(root.firstChild);
       }
 
       if (listWorker && listWorker.length > 0) {
-        root.insertAdjacentHTML('afterbegin', `<table class="table">
+        root.insertAdjacentHTML('afterbegin',`<table class="table">
                     <thead>
                         <tr>
                             <th>
@@ -642,29 +568,19 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="table-worker">
                         ${listWorker.map((worker) => {
-          return `
-                <tr class="table-row" data-uid="${worker.uid}">
-          ${function () {
-            if (isEditUid === worker.uid) {
-              haveEditingRow = true;
-            }
-            return isEditUid === worker.uid ? renderRowWorkerEdit(worker) : renderRowWorker(worker)
-          }()}
-                </tr>
+                            return `
+                                <tr class="table-row" data-uid="${worker.uid}">
+                                    ${isEditUid === worker.uid ? renderRowWorkerEdit(worker) : renderRowWorker(worker)}
+                                </tr>
                             `
-        }).join('')}
+                        }).join('')}
                     </tbody>
                 </table>
             `);
 
         setEvent();
-
-        if(haveEditingRow) {
-          const fValidate = new FormValidate('#form-table', {});
-          fValidate.validateAll();
-        }
       }
     }
 
@@ -701,12 +617,15 @@
         <td class="table-col">
             <div class="table-participants__actions">
                 <button class="btn btn--cancel" >Cancel</button>
-                <button class="btn btn--save" type="submit">Save</button>
+                <button class="btn btn--save" >Save</button>
             </div>
         </td>
       `
     }
 
+    function checkEditForm(fn) {
+        checkEditFormFn = fn;
+    }
     function unLoad() {
       removeEvent();
     }
@@ -716,6 +635,7 @@
       init: init,
       unLoad: unLoad,
       add: add,
+      checkEditForm: checkEditForm,
     }
 
   })();
@@ -723,8 +643,6 @@
 
   workersModule.init();
   workersModule.unLoad();
-
-  // {errorClassName, renderError}
 
 
 </script>
