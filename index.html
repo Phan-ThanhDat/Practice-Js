@@ -49,46 +49,16 @@
                                        placeholder="Phone number">
                             </div>
                         </div>
-                        <button class="btn btn--add" type="submit">Add new</button>
-                        <button class="btn btn--add" type="reset">Reset</button>
+                        <button class="btn btn--add" type="submit" disabled>Add new</button>
+                        <button class="btn btn--reset" type="reset">Reset</button>
                     </form>
                 </div>
             </div>
-            <div class="list__infos">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>
-                            <div class="list__t-name-icon">
-                                <h3 class="title title--name">Name</h3>
-                                <i class="fas fa-arrow-down list__t-icon"></i>
-                            </div>
-                        </th>
-                        <th>
-                            <h3 class="title title--mail">E-mail address</h3>
-                        </th>
-                        <th>
-                            <h3 class="title title--tel">Phone number</h3>
-                        </th>
-                    </tr>
-                    </thead>
+            <form id="form-table">
+                <div class="list__table">
 
-                    <tbody>
-
-
-                    </tbody>
-
-
-
-
-                </table>
-
-
-
-
-            </div>
-
-
+                </div>
+            </form>
         </div>
     </div>
 
@@ -96,14 +66,106 @@
 
 <script>
 
+    function FormValidate(selector, options) {
+        this._selector = selector;
+        this._inputStates = {};
+        this._options = options;
+        this.init();
+    }
+
+    FormValidate.prototype = {
+        _checkCanSubmit: function () {
+            const keys = Object.keys(this._inputStates);
+            let canSubmit = true;
+            for(let i = 0; i < keys.length; i++) {
+                if(!this._inputStates[keys[i]].valid) {
+                    canSubmit = false;
+                    break;
+                }
+            }
+
+            this.submitBtn.disabled = !canSubmit;
+        },
+
+        _onChangeInput: function (e) {
+            this._inputStates[e.target.name].value = e.target.value;
+            this.validateField(e.target.name);
+            this._checkCanSubmit();
+        },
+
+        _renderError: function (name) {
+            const input = this.form.querySelector(`input[name="${name}"]`);
+            let errorBox = input.parentElement.querySelector('.input__error');
+
+            if(this._inputStates[name].valid) {
+                if(errorBox) {
+                    errorBox.remove();
+                }
+            } else {
+                if(errorBox) {
+                    errorBox.innerHTML = this._inputStates[name].errMessage
+                } else {
+                    input.insertAdjacentHTML('afterend', `
+                    <div class="input__error">${this._inputStates[name].msg}</div>`)
+                }
+            }
+        },
+
+        validateField: function (name) {
+            if (this._inputStates[name].value) {
+                this._inputStates[name].valid = true;
+                this._inputStates[name].msg = '';
+            } else {
+                this._inputStates[name].valid = false;
+                this._inputStates[name].msg = 'This field is required';
+            }
+            this._renderError(name)
+        },
+
+        validateAll: function () {
+            Object.keys(this._inputStates).forEach((key) => {
+                this.validateField(key);
+            });
+            this._checkCanSubmit();
+        },
+
+        init: function () {
+            this.form = document.querySelector(this._selector);
+            this.submitBtn = this.form.querySelector('button[type="submit"]');
+            this.form.querySelectorAll('input').forEach((input) => {
+                this._inputStates[input.name] = {
+                    value: input.value,
+                    valid: null,
+                    msg: null,
+                    // rules: data-rules
+                };
+                input.addEventListener('input', this._onChangeInput.bind(this))
+            });
+        },
+    };//
+
     workersModule = (function () {
 
         function init() {
-            validateFormWorker.init();
+            //validateFormWorker.init();
             dataTableWorker.init();
-            validateFormWorker.onSubmitSuccess = function () {
-                dataTableWorker.render();
-            }
+            const f = new FormValidate('#form-worker', {});
+//      validateFormWorker.onSubmitSuccess(function (data) {
+//        dataTableWorker.add({
+//          fname: data.fname.value,
+//          email: data.email.value,
+//          tel: data.tel.value,
+//          uid: data.uid,
+//        });
+//      });
+
+
+            // dataTableWorker.checkEditForm(function (data) {
+            //     validateFormWorker.validateEditForm(data);
+            // })
+            // validateFormWorker.check&SubmitEdit(function (data) {
+            //     display.addEventListener('click', dataTableWorker.clickIconEdit(data));
+            // })
         }
 
 
@@ -137,16 +199,13 @@
 
 
     validateFormWorker = (function () {
-        let arraySave = [];
 
-        var form = document.getElementById('form-worker');
+        let form = document.getElementById('form-worker');
         var btnSubmit = form.querySelector('button[type="submit"]');
         var inputs = form.querySelectorAll('input');
-        let table = document.querySelector('.table');
-        let display = table.querySelector('tbody');
-
+        var onSubmitSuccessCb;
         var inputStates = {
-            uid : '',
+            uid: '',
             fname: {
                 value: '',
                 valid: false,
@@ -187,7 +246,12 @@
             return uuid;
         }
 
-            function validateInput(input) {
+        function validateEditForm(input) {
+            validateInput(input);
+        }
+
+        function validateInput(input) {
+            console.log(inputStates)
             switch (input) {
                 case 'fname':
                     inputStates.fname.valid = Boolean(inputStates.fname.value);
@@ -198,8 +262,6 @@
                     }
                     break;
                 case 'email':
-
-                    // sasasa
                     inputStates.email.valid = Boolean(inputStates.email.value);
                     if (!inputStates.email.valid) {
                         inputStates.email.errMessage = 'Not empty';
@@ -207,6 +269,7 @@
                     else if (!validateEmail(inputStates.email.value)) {
                         inputStates.email.errMessage = 'Email wrong';
                         inputStates.email.valid = false;
+                        //alert('wrong')
                     }
                     else {
                         inputStates.email.errMessage = '';
@@ -217,7 +280,7 @@
                     if (!inputStates.tel.valid) {
                         inputStates.tel.errMessage = 'Not empty';
                     }
-                    else if (isPhoneNumber(inputStates.tel.value) && (inputStates.tel.valid)){
+                    else if (isPhoneNumber(inputStates.tel.value) && (inputStates.tel.valid)) {
                         inputStates.tel.errMessage = '';
                     }
                     else if (!isPhoneNumber(inputStates.tel.value) || !(inputStates.tel.valid)) {
@@ -231,134 +294,14 @@
 
         }
 
-        function resetForm() {
-            let fname1 = form.getElementsByClassName('input')[0];
-            let fname2 = fname1.querySelector(`input[name="fname"]`).value ='';
-            inputStates.fname.value = fname2.value;
-
-            email1 = form.getElementsByClassName('input')[1];
-            email2 = email1.querySelector(`input[name="email"]`).value ='';
-            inputStates.email.value = email2.value;
-
-            tel1 = form.getElementsByClassName('input')[2];
-            tel2 = tel1.querySelector(`input[name="tel"]`).value ='';
-            inputStates.tel.value = tel2.value;
-
-            btnSubmit.disabled = true;
-            btnSubmit.style.color = 'white'
-        }
-
-
-        function save2Localstorage() {
-            let arraySaveString = [];
-            let list = 'list';
-            //inputStates.uid = new Date().getUTCMilliseconds();
-
-
-            inputStates.fname.valid = Boolean(inputStates.fname.value);
-            inputStates.email.valid = Boolean(inputStates.email.value);
-            inputStates.tel.valid = Boolean(inputStates.tel.value);
-            if(typeof (Storage) !=='undefined'){
-                if (inputStates.fname.valid && inputStates.email.valid && inputStates.tel.valid) {
-                    if(!localStorage.getItem(list)){
-                        arraySave.push(inputStates);
-                        arraySaveString = JSON.stringify(arraySave);
-                        localStorage.setItem(list,arraySaveString);
-                        localStorage[list] = arraySaveString;
-                    }
-                    else {
-                        //get
-                        arraySaveString =  localStorage.getItem(list);
-                        arraySaveString = JSON.parse(arraySaveString);
-                        //push
-                        arraySaveString.push(inputStates);
-                        //save to
-                        arraySaveString = JSON.stringify(arraySaveString);
-                        localStorage[list] = arraySaveString;
-                    }
-                }
-            }
-        }
-
-        function save2LocalStorageNewList() {
-            if(typeof (Storage) !=='undefined'){
-                arraySave = JSON.stringify(arraySave);
-                localStorage['list'] = arraySave;
-            }
-
-        }
-        function displayVar() {
-            arraySave = localStorage.getItem('list');
-            arraySave = JSON.parse(arraySave);
-//             arraySave.forEach(function (item) {
-//                 document.getElementById('display').insertAdjacentHTML('afterbegin', `
-// <h2> Title </h2>
-//     <p>${item.title.value} </p>
-// <h3> Content </h3>
-//     <p> ${item.content.value} </p>
-// __________________`);
-//             });
-
-            let listRemove = display;
-
-            while(listRemove.hasChildNodes()) {
-                listRemove.removeChild(listRemove.firstChild);
-            }
-
-            arraySave.forEach(function (item) {
-                display.insertAdjacentHTML('afterbegin', `
-
-<tr class="posts" data-uid="${item.uid}">
-
-<td class="post">
-<p class="info__text info__text--name">
-${item.fname.value}
-</p>
-</td>
-
-<td class="post">
-<p class="info__text info__text--mail">
-${item.email.value}
-</p>
-</td>
-
-<td class="post">
-<p class="info__text info__text--tel">
-${item.tel.value}
-</p>
-</td>
-
-<td>
-<div class="list__cover-icons">
-<i class="fas fa-pencil-alt info__icon"></i>
-<i class="fas fa-trash info__icon"></i>
-</div>
-</td>
-
-</tr>
-
-
-`);
-
-            });
-
-
-
-        }
-        function renderSubmit(e) {
-            e.preventDefault();
-            save2Localstorage();
-            displayVar();
-            resetForm();
-        }
-
+        //render input if it is wrong
         function renderInput(input) {
             var inputSelector = form.querySelector(`input[name="${input}"]`);
 
             if (!inputStates[input].valid) {
                 inputSelector.classList.add('input--error');
                 let errorBox = inputSelector.parentElement.querySelector('.input__error');
-                if(!errorBox) {
+                if (!errorBox) {
                     inputSelector.insertAdjacentHTML('afterend', `
                     <div class="input__error">${inputStates[input].errMessage}</div>
                `)
@@ -374,27 +317,7 @@ ${item.tel.value}
             checkFormCanBeSubmit1();
 
         }
-        //
-        // function checkFormCanBeSubmit() {
-        //
-        //     var isReady = true;
-        //     var obj = Object.keys(inputStates); // ['fname', 'tel']
-        //
-        //     for ( let i = 0; i < obj.length; i+=1){
-        //         if (!inputStates[obj[i]].valid){
-        //             isReady = false;
-        //             break;
-        //         }
-        //     }
-        //
-        //     if(!isReady) {
-        //         btnSubmit.disabled = true;
-        //     } else {
-        //         btnSubmit.disabled = false;
-        //         btnSubmit.style.color = 'black';
-        //     }
-        //
-        // }
+
 
         function checkFormCanBeSubmit1() {
 
@@ -403,14 +326,14 @@ ${item.tel.value}
             inputStates.email.valid = Boolean(inputStates.email.value);
             inputStates.tel.valid = Boolean(inputStates.tel.value);
 
-            if (!inputStates.tel.valid || !inputStates.email.valid || !inputStates.fname.valid){
+            if (!inputStates.tel.valid || !inputStates.email.valid || !inputStates.fname.valid) {
                 isReady = false;
             }
 
-            if(!isReady) {
+            if (!isReady) {
                 btnSubmit.disabled = true;
                 btnSubmit.style.color = 'white'
-            } else if(isReady) {
+            } else if (isReady) {
                 btnSubmit.disabled = false;
                 btnSubmit.style.color = 'red'
             }
@@ -420,7 +343,6 @@ ${item.tel.value}
             if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
                 return (true)
             }
-            //alert("You have entered an invalid email address!")
             return (false)
         }
 
@@ -446,190 +368,355 @@ ${item.tel.value}
                         return true;
                     }
                 }
-            } catch (e) {}
+            } catch (e) {
+            }
 
             return false;
         }
 
-        function removeList(e) {
-            let checkHasClass = e.target.parentElement;
-            if (checkHasClass.classList.contains('fa-trash')){
-                removeButton = e.target;
-                postOfRemoveButton = removeButton.parentElement.parentElement.parentElement.parentElement;
-                console.log(postOfRemoveButton);
-
-
-                arraySave = localStorage.getItem('list');
-                arraySave = JSON.parse(arraySave);
-
-                console.log(arraySave);
-
-                arraySave.forEach(function (item) {
-                    if(item.uid === postOfRemoveButton.dataset.uid){
-                        let index = arraySave.indexOf(item);
-
-                        arraySave.splice(index, 1);
-
-                        save2LocalStorageNewList();
-                        displayVar();
-                    }
-                });
-            }
-
-        }
-
-        function clickIconEdit(e) {
-            let checkHasClass = e.target.parentElement;
-            if (checkHasClass.classList.contains('fa-pencil-alt')){
-                let editButton = e.target;
-                let postOfEditButton = editButton.parentElement.parentElement.parentElement.parentElement;
-                postOfEditButton.style.display = 'none';
-
-                let tableParticipants = document.querySelector('.table');
-                tableParticipants.insertAdjacentHTML('afterend', `
-
-<div class="list__row list__row--infos">
-                    <form class="content-input list__edit-save">
-                        <div class="inputs">
-                            <input type="text" name="fname" class="input__editing" value="George Clooney">
-                            <input type="email" name="email" class="input__editing input__editing--mail"
-                                   value="george.clooney@hollywood.com">
-                            <input type="tel" name="tel" class="input__editing" value="0504629898">
-                        </div>
-
-                        <button class="btn btn--cancel" type="reset">Cancel</button>
-                        <button class="btn btn--save" type="submit">Save</button>
-
-                    </form>
-                </div>
-`);
-
-                if (document.querySelector('.list__edit-save')){
-                    arraySave = localStorage.getItem('list');
-                    arraySave = JSON.parse(arraySave) || [];
-
-                    let contentInput = document.querySelector('.list__edit-save');
-                    let inputs = contentInput.querySelectorAll('input');
-                    alert ('click save icon')
-                    arraySave.forEach(function (item) {
-                        if(item.uid === postOfEditButton.dataset.uid){
-                            inputStates['uid'] = item.uid;
-                            contentInput.querySelectorAll('input')[0].value = '';
-                            contentInput.querySelectorAll('input')[1].value = '';
-                            contentInput.querySelectorAll('input')[2].value = '' ;
-                        }
-                    });
-                }
-                afterClickBtnEditSave();
-            }
-        }
-
-        function afterClickBtnEditSave() {
-            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
-            alert (checkContaintag.classList.contains('list__edit-save'))
-
-
-                let contentInput = document.querySelector('.list__edit-save');
-                let inputsEdit = contentInput.querySelectorAll('input');
-                inputsEdit.forEach(function (inputt) {
-                    inputt.addEventListener('input', function (e) {
-                        inputStates[e.target.name].value = e.target.value;
-                    });
-                });
-                alert ('check contain list')
-                let inputsCover = checkContaintag.querySelector('.list__edit-save');
-                let btnSave = inputsCover.querySelector('.btn--save');
-                btnSave.addEventListener('click', saveEventEdit);
-
-        }
-
-        function saveEventEdit(e) {
-            alert(inputStates.uid)
-            arraySave.forEach(function (item) {
-                if(item.uid === inputStates.uid) {
-                    let index = arraySave.indexOf(item);
-                    arraySave.splice(index, 1, inputStates);
-                    //arraySave[index] = inputStates;
-                    alert(arraySave[index].fname.value)
-                }
-            });
-
-            let formWorker = document.getElementById('form-worker');
-            formWorker.style.display = 'none';
-            e.preventDefault();
-            alert('check prevent')
-            save2LocalStorageNewList();
-            alert('save event edit')
-            displayVar();
-            formWorker.style.display = 'flex';
-            let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
-            let inputsCover = checkContaintag.querySelector('.list__edit-save');
-            inputsCover.style.display = 'none';
-        }
 
         function init() {
             btnSubmit.disabled = true;
-            arraySave = localStorage.getItem('list');
-            arraySave = JSON.parse(arraySave) || [];
-
-            if (arraySave.length > 0) {
-                displayVar();
-            }
 
             inputs.forEach(function (inputt) {
                 inputt.addEventListener('input', inputChange)
             });
-            form.addEventListener('submit',renderSubmit);
+            form.addEventListener('submit', renderSubmit);
 
-            display.addEventListener('click', clickIconEdit);
-
-//             let checkContaintag = document.querySelector('.list__infos').querySelector('.list__infos');
-//             if (checkContaintag.classList.contains('list__edit-save')){
-//                 let contentInput = document.querySelector('.list__edit-save');
-//                 let inputsEdit = contentInput.querySelectorAll('input');
-//                 inputsEdit.forEach(function (inputt) {
-//                     inputt.addEventListener('input', function (e) {
-//                         inputStates[e.target.name].value = e.target.value;
-//                     });
-//                 });
-// alert ('check contain list')
-//                 let inputsCover = checkContaintag.querySelector('.list__edit-save');
-//                 let btnSave = inputsCover.querySelector('.btn--save');
-//                 btnSave.addEventListener('click', saveEventEdit);
-//             }
-
-
-
-
-            display.addEventListener('click',removeList);
         }
 
         function unLoad() {
-            inputs.forEach(function (input) {
-                input.removeEventListener('input', inputChange)
-            });
-            form.removeEventListener('submit',renderSubmit);
-            display.removeEventListener('click', editList);
-            display.removeEventListener('click',removeList);
+//      inputs.forEach(function (input) {
+//        input.removeEventListener('input', inputChange)
+//      });
+//      form.removeEventListener('submit', renderSubmit);
+//      display.removeEventListener('click', editList);
+//      display.removeEventListener('click', removeList);
         }
 
+        function renderSubmit(e) {
+            e.preventDefault();
+
+            if (onSubmitSuccessCb) {
+                onSubmitSuccessCb(inputStates);
+                resetForm();
+            }
+
+            //onSubmitSuccessCb(arraySave)
+        }
+
+        function resetForm() {
+            let fname1 = form.getElementsByClassName('input')[0];
+            let fname2 = fname1.querySelector(`input[name="fname"]`).value = '';
+            inputStates.fname.value = fname2.value;
+
+            email1 = form.getElementsByClassName('input')[1];
+            email2 = email1.querySelector(`input[name="email"]`).value = '';
+            inputStates.email.value = email2.value;
+
+            tel1 = form.getElementsByClassName('input')[2];
+            tel2 = tel1.querySelector(`input[name="tel"]`).value = '';
+            inputStates.tel.value = tel2.value;
+
+            btnSubmit.disabled = true;
+            btnSubmit.style.color = 'white'
+        }
+
+        function onSubmitSuccess(cb) {
+            onSubmitSuccessCb = cb
+        }
 
         return {
             init: init,
             unLoad: unLoad,
+            onSubmitSuccess: onSubmitSuccess,
+            validateEditForm: validateEditForm,
         }
 
     })();
 
     dataTableWorker = (function () {
+        const root = document.querySelector('.list__table');
+        var listWorker;
+        var isEditUid;
+
+        let inputStates = {
+            uid: '',
+            fname: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            },
+            email: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            },
+            tel: {
+                value: '',
+                valid: false,
+                errMessage: '',
+            }
+
+        };
 
         function init() {
-
+            loadData();
+            renderAll();
         }
 
 
+        function loadData() {
+            try {
+                listWorker = JSON.parse(window.localStorage.getItem('list'));
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        function syncData() {
+            window.localStorage.setItem('list', JSON.stringify(listWorker));
+        }
+
+        function removeEvent(uid) {
+            if (uid) {
+                // tim   nut edit uid=> remove event and callback editRow
+                // tim  nut xoa uid=> remove event and callback deleteRow
+            }
+            else {
+                root.querySelectorAll('.worker-edit').forEach((btn) => {
+                    btn.removeEventListener('click', editRow)
+                });
+                root.querySelectorAll('.worker-delete').forEach((btn) => {
+                    btn.removeEventListener('click', deleteRow)
+                });
+                // tim toan bo nut edit => remove event and callback editRow
+                // tim toan bo nut xoa => remove event and callback deleteRow
+                // tim toan bo nut save and cancel => remove event callback saveEdit and cancelEdit
+            }
+        }
+
+        function setEvent(uid) {
+            if (uid) {
+
+            } else {
+                root.querySelectorAll('.worker-edit').forEach((btn) => {
+                    btn.addEventListener('click', editRow)
+                });
+                root.querySelectorAll('.worker-delete').forEach((btn) => {
+                    btn.addEventListener('click', deleteRow)
+                });
+            }
+            // tim toan bo nut edit => set event and callback editRow
+            // tim toan bo nut xoa => set event and callback deleteRow
+
+        }
+        //comment
+
+        function editRow(e) {
+            isEditUid = e.currentTarget.dataset.uid;
+            inputStates.uid = isEditUid;
+            renderAll();
+            let workerTable = document.querySelector('.table');
+            let inputs = workerTable.querySelectorAll('input');
+
+            inputs.forEach(function (inputt) {
+                inputt.addEventListener('input', (e) => {
+                    inputStates[e.target.name].value = inputt.value;
+                })
+            });
+
+            inputs.forEach(function (inputt) {
+                inputStates[inputt.name].value = inputt.value;
+            });
+
+            let btnSave = workerTable.querySelector('.btn--save');
+            let btnCancel = workerTable.querySelector('.btn--cancel');
+            btnSave.addEventListener('click', saveEdit);
+            btnCancel.addEventListener('click', cancelEdit);
+
+            //e.currentTarget vs e.target
+            // set state isEditUid = uid
+            // render => 3 input => validate => setEvent
+            //
+            // set event cho 2 cai nut save va cancel => khi dung edit phai xoa event 2 nut save and delete
+        }
+
+        function saveEdit(e) {
+            // doc isEditUid
+            // doc editRowStates
+            // set states cho list
+            e.preventDefault();
+            modifyData({
+                fname: inputStates.fname.value,
+                email: inputStates.email.value,
+                tel: inputStates.tel.value,
+                uid: inputStates.uid,
+            });
+
+            syncData();
+            isEditUid = null;
+            renderAll();
+        }
+
+        let modifyData = (data) => {
+            listWorker.forEach(function (item) {
+                if (item.uid === data.uid) {
+                    let index = listWorker.indexOf(item);
+                    listWorker.splice(index, 1, data);
+
+                    // renderAll(uid, 'edit');
+                }
+            });
+        }
+
+        function cancelEdit(e) {
+            e.preventDefault();
+            isEditUid = null;
+            renderAll();
+        }
+
+        function deleteRow(e) {
+            e.preventDefault();
+            isEditUid = e.currentTarget.dataset.uid;
+            inputStates.uid = isEditUid;
+
+            listWorker.forEach(function (item) {
+                if (item.uid === inputStates.uid) {
+                    let index = listWorker.indexOf(item);
+                    listWorker.splice(index, 1);
+
+                    // renderAll(uid, 'edit');
+                }
+            });
+
+            // Xoa data no list
+            // Sync data
+            syncData();
+            renderAll();
+        }
+
+
+        function renderRow(uid, action) {
+            // add = > [ush row => set evbent uid
+            // remove => xoa event uid => xoa table
+        }
+
+
+        function add(data) {
+            /// validate data
+            if (listWorker) {
+                listWorker.push(data);
+            } else {
+                listWorker = [data];
+            }
+            // set data moi => push
+            // tap uid moi => set vao list {uid: data, uidx/...
+
+            syncData();
+
+            renderAll();
+        }
+
+        function renderAll() {
+            let haveEditingRow = false;
+            removeEvent();
+            while (root.firstChild) {
+                root.removeChild(root.firstChild);
+            }
+
+            if (listWorker && listWorker.length > 0) {
+                root.insertAdjacentHTML('afterbegin', `<table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="list__t-name-icon">
+                                    <h3 class="title title--name">Name</h3>
+                                </div>
+                            </th>
+                            <th>
+                                <h3 class="title title--mail">E-mail address</h3>
+                            </th>
+                            <th>
+                                <h3 class="title title--tel">Phone number</h3>
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${listWorker.map((worker) => {
+                    return `
+                <tr class="table-row" data-uid="${worker.uid}">
+          ${function () {
+                        if (isEditUid === worker.uid) {
+                            haveEditingRow = true;
+                        }
+                        return isEditUid === worker.uid ? renderRowWorkerEdit(worker) : renderRowWorker(worker)
+                    }()}
+                </tr>
+                            `
+                }).join('')}
+                    </tbody>
+                </table>
+            `);
+
+                setEvent();
+
+                if(haveEditingRow) {
+                    const fValidate = new FormValidate('#form-table', {});
+                    fValidate.validateAll();
+                }
+            }
+        }
+
+        function renderRowWorker(worker) {
+            return `
+        <td class="table-col">${worker.fname}</td>
+        <td class="table-col">${worker.email}</td>
+        <td class="table-col">${worker.tel}</td>
+        <td class="table-col">
+            <div class="table-participants__actions">
+                <span class="worker-edit" data-uid="${worker.uid}">
+                    <i class="fas fa-pencil-alt"></i>
+                </span>
+                <span class="worker-delete" data-uid="${worker.uid}">
+                    <i class="fas fa-trash-alt"></i>
+                </span>
+
+            </div>
+        </td>
+      `
+        }
+
+        function renderRowWorkerEdit(worker) {
+            return `
+        <td class="table-col">
+            <input data-rules="required" name="fname" type="text" class="input__adding" placeholder="Full name" data-fname="${worker.fname}" value="${worker.fname}">
+        </td>
+        <td class="table-col">
+            <input data-rules="required" name="email" type="text" class="input__adding" placeholder="Email" data-email="${worker.email}" value="${worker.email}">
+        </td>
+        <td class="table-col">
+            <input data-rules="required" name="tel" type="text" class="input__adding" placeholder="Full name" data-tel="${worker.tel}" value="${worker.tel}">
+        </td>
+        <td class="table-col">
+            <div class="table-participants__actions">
+                <button class="btn btn--cancel" >Cancel</button>
+                <button class="btn btn--save" type="submit">Save</button>
+            </div>
+        </td>
+      `
+        }
+
+        function unLoad() {
+            removeEvent();
+        }
+
         return {
+            renderAll: renderAll,
             init: init,
+            unLoad: unLoad,
+            add: add,
         }
 
     })();
@@ -638,6 +725,7 @@ ${item.tel.value}
     workersModule.init();
     workersModule.unLoad();
 
+    // {errorClassName, renderError}
 
 
 </script>
